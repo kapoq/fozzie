@@ -7,7 +7,6 @@ Gem::Specification.new do |s|
   s.version     = Fozzie::VERSION
   s.authors     = ["Marc Watts"]
   s.email       = ["marcw.watts@loneplanet.com"]
-  s.homepage    = "lonelyplanet.com"
   s.summary     = %q{Statistics gem for LonelyPlanet Online}
   s.description = %q{Gem allows statistics gathering from Ruby and Ruby 
     on Rails applications within LonelyPlanet Online}
