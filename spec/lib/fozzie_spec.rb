@@ -1,35 +1,41 @@
 require 'spec_helper'
+require 'fozzie/classes'
 
 describe Fozzie do
 
-  it { should respond_to(:count) }
-  it { should respond_to(:timer) }
-  it { should respond_to(:sample) }
   it { should respond_to(:c) }
   it { should respond_to(:config) }
-  
+
   it "has configuration" do
     Fozzie.config.should be_kind_of(Fozzie::Configuration)
     Fozzie.c.should be_kind_of(Fozzie::Configuration)
   end
 
-  it "registers count" do
-    Fozzie::Connection.expects(:send_data).with('test.bucket:1|c')
-    Fozzie.count('test.bucket', 1)
-  end
-
-  it "registers timing" do
-    Fozzie::Connection.expects(:send_data).with('test.bucket:320|ms')
-    Fozzie.timer('test.bucket', 320, 'ms')
-  end
-
-  it "registers sampling" do
-    Fozzie::Connection.expects(:send_data).with('test.bucket:1|c|@0.1')
-    Fozzie.sample('test.bucket', 1, :count, 0.1)
+  it "creates new classes for statistics gathering" do
+    Fozzie::Classes::NAMESPACES.each do |k|
+      Kernel.const_defined?(k).should == true
+    end
   end
   
-  it "rejects bad types" do
-    proc { Fozzie.sample('test.bucket', 1, :blabla, 0.1) }.should raise_error(NotImplementedError)
+  it "acts like its inherited parent" do
+    Fozzie::Classes::NAMESPACES.each do |k|
+      kl = Kernel.const_get(k)
+      kl.should respond_to(:increment)
+      kl.should respond_to(:decrement)
+      kl.should respond_to(:timing)
+      kl.should respond_to(:update_counter)
+    end
+  end
+  
+  it "acts an a singleton" do
+    Fozzie::Classes::NAMESPACES.each do |k|
+      kl1, kl2 = Kernel.const_get(k), Kernel.const_get(k)
+      kl1.should == kl2
+    end
+  end
+  
+  it "does not allow new creation" do
+    proc { Fozzie::AbstractFozzie.new(1,2) }.should raise_error
   end
 
 end

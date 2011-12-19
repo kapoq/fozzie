@@ -10,4 +10,14 @@ describe Fozzie::Configuration do
     subject.port.should be_kind_of(Fixnum)
   end
 
+  it "attempts to load configuration from yaml" do
+    c = Fozzie::Configuration.new({:env => 'test', :config_path => 'spec/'})
+    c.host.should == '1.1.1.1'
+    c.port.should == 9876
+  end
+
+  it "defaults env" do
+    subject.env.should == 'development'
+  end
+
 end
