@@ -35,7 +35,7 @@ module Fozzie
     end
 
     def full_config_path(path)
-      File.expand_path('config/stats.yml', path)
+      File.expand_path('config/fozzie.yml', path)
     end
 
     def config_from_yaml(args)
