@@ -6,7 +6,7 @@ module Fozzie
   # Fozzie configuration allows assignment of global properties
   # that will be used within the Fozzie codebase.
   class Configuration
-    
+
     attr_accessor :env, :config_path, :host, :port
 
     def initialize(args = {})
@@ -31,9 +31,9 @@ module Fozzie
     # Default configuration settings
     # @return [Hash]
     def self.default_configuration
-      { :host => '127.0.0.1', :port => 999, :config_path => '', :env => 'development' }.dup
+      { :host => '127.0.0.1', :port => 8125, :config_path => '', :env => 'development' }.dup
     end
-    
+
     def full_config_path(path)
       File.expand_path('config/stats.yml', path)
     end

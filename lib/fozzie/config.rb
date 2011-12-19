@@ -10,7 +10,7 @@ module Fozzie
     def config(&block)
       @config ||= Configuration.new
     end
-    
+
     def configure(&block)
       yield c if block_given?
     end
