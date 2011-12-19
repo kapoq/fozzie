@@ -12,6 +12,11 @@ module Fozzie
       def new(host, port)
         super Fozzie.c.host, Fozzie.c.port
       end
+      
+      # Overload the send_stats method to automicatially prefix the data bucket string
+      def send_stats(data, sample_rate = 1)
+        super "#{Fozzie.c.data_prefix}#{data}", sample_rate
+      end
 
     end
 

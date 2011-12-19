@@ -7,12 +7,18 @@ module Fozzie
   # that will be used within the Fozzie codebase.
   class Configuration
 
-    attr_accessor :env, :config_path, :host, :port
+    attr_accessor :env, :config_path, :host, :port, :appname
 
     def initialize(args = {})
       merge_and_assign_config(args)
 
       self
+    end
+    
+    def data_prefix
+      s = "%s." % env
+      s = appname << ".#{s}" unless appname.nil? || appname.empty?
+      s
     end
 
     private
@@ -31,8 +37,13 @@ module Fozzie
     # Default configuration settings
     # @return [Hash]
     def self.default_configuration
-      en = 
-      { :host => '127.0.0.1', :port => 8125, :config_path => '', :env => (ENV['RAILS_ENV'] || 'development') }.dup
+      { 
+        :host        => '127.0.0.1', 
+        :port        => 8125, 
+        :config_path => '', 
+        :env         => (ENV['RAILS_ENV'] || 'development'),
+        :appname     => ''
+      }.dup
     end
 
     def full_config_path(path)

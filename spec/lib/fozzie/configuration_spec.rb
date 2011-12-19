@@ -14,10 +14,21 @@ describe Fozzie::Configuration do
     c = Fozzie::Configuration.new({:env => 'test', :config_path => 'spec/'})
     c.host.should == '1.1.1.1'
     c.port.should == 9876
+    c.appname.should == 'fozzie'
+    c.data_prefix.should == 'fozzie.test.'
   end
 
   it "defaults env" do
     subject.env.should == 'development'
+  end
+  
+  it "creates a data prefix" do
+    subject.data_prefix.should == 'development.'
+  end
+  
+  it "creates a data prefix with appname when set" do
+    subject.appname = 'astoria'
+    subject.data_prefix.should == 'astoria.development.'
   end
 
 end
