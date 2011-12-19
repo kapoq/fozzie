@@ -31,7 +31,8 @@ module Fozzie
     # Default configuration settings
     # @return [Hash]
     def self.default_configuration
-      { :host => '127.0.0.1', :port => 8125, :config_path => '', :env => 'development' }.dup
+      en = 
+      { :host => '127.0.0.1', :port => 8125, :config_path => '', :env => (ENV['RAILS_ENV'] || 'development') }.dup
     end
 
     def full_config_path(path)
