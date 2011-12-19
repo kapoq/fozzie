@@ -22,7 +22,7 @@ module Fozzie
     def merge_and_assign_config(args = {})
       arg = self.class.default_configuration.merge(args.symbolize_keys)
       arg.delete_if {|key, val| !self.respond_to?(key.to_sym) }
-      arg.merge!(config_from_yaml(args))
+      arg.merge!(config_from_yaml(arg))
       arg.each {|a,v| self.send("#{a}=", v) }
 
       arg
