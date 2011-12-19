@@ -1,1 +1,1 @@
-rvm use --create 1.8.7@fozzie
+rvm use --create 1.9.3@fozzie

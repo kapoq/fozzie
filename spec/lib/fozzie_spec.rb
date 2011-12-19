@@ -27,5 +27,9 @@ describe Fozzie do
     Fozzie::Connection.expects(:send_data).with('test.bucket:1|c|@0.1')
     Fozzie.sample('test.bucket', 1, :count, 0.1)
   end
+  
+  it "rejects bad types" do
+    proc { Fozzie.sample('test.bucket', 1, :blabla, 0.1) }.should raise_error(NotImplementedError)
+  end
 
 end
