@@ -5,17 +5,18 @@ module Fozzie
   module Classes
 
     class AbstractFozzie < Statsd::Client
-      include Singleton
+      attr_reader :prefix
+
+      def initialize(host, port, prefix = nil)
+        @prefix = prefix
+        super host, port
+      end
 
       private
 
-      def new(host, port)
-        super Fozzie.c.host, Fozzie.c.port
-      end
-      
       # Overload the send_stats method to automicatially prefix the data bucket string
       def send_stats(data, sample_rate = 1)
-        super "#{Fozzie.c.data_prefix}#{data}", sample_rate
+        super "#{@prefix}#{data}", sample_rate
       end
 
     end
@@ -23,9 +24,10 @@ module Fozzie
     NAMESPACES = %w{Stats S}
 
     def self.included(klass)
+      host, port, prefix = Fozzie.c.host, Fozzie.c.port, Fozzie.c.data_prefix
       NAMESPACES.each do |klas|
         # set a constant
-        Kernel.const_set(klas, AbstractFozzie.instance) unless const_defined?(klas)
+        Kernel.const_set(klas, AbstractFozzie.new(host, port, prefix)) unless const_defined?(klas)
       end
     end
 

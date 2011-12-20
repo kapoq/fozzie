@@ -34,8 +34,8 @@ describe Fozzie do
     end
   end
   
-  it "does not allow new creation" do
-    proc { Fozzie::AbstractFozzie.new(1,2) }.should raise_error
+  it "assigns prefix when passed" do
+    Fozzie::AbstractFozzie.new(1,2, 'a').prefix.should == 'a'
   end
 
 end
