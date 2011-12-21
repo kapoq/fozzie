@@ -23,7 +23,8 @@ describe Fozzie do
       kl.should respond_to(:increment)
       kl.should respond_to(:decrement)
       kl.should respond_to(:timing)
-      kl.should respond_to(:update_counter)
+      kl.should respond_to(:count)
+      kl.should respond_to(:time)
     end
   end
 
@@ -34,13 +35,14 @@ describe Fozzie do
     end
   end
 
-  it "assigns prefix when passed" do
-    Fozzie::AbstractFozzie.new(1,2, 'a').prefix.should == 'a'
+  it "assigns namespace when passed" do
+    Fozzie::AbstractFozzie.new(1,2, 'a').namespace.should == 'a'
   end
 
   it "times a given block" do
-    Stats.expects(:timing).with() {|b, val| b == 'data.bin' && (100..1200).include?(val) }
+    Stats.expects(:timing).with() {|b, val, timing| b == 'data.bin' && (1000..1200).include?(val) }.twice
     Stats.time_for('data.bin') { sleep 1 }
+    Stats.time_to_do('data.bin') { sleep 1 }
   end
 
   it "registers a commit" do

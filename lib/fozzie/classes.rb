@@ -3,31 +3,30 @@ require 'statsd'
 module Fozzie
   module Classes
 
-    class AbstractFozzie < Statsd::Client
+    #class AbstractFozzie < Statsd::Client
+    class AbstractFozzie < Statsd
       attr_reader :prefix
 
       def initialize(host, port, prefix = nil)
-        @prefix = prefix
+        @namespace = prefix unless prefix.nil?
         super host, port
       end
 
-      def time_for(data, &block)
-        tick = Time.now.usec
-        block.call
-        tock = Time.now.usec
-        timing(data, (tock - tick))
+      def time_to_do(stat, sample_rate=1, &block); time_for(stat, sample_rate, &block); end
+      def time_for(stat, sample_rate=1, &block)
+        time(stat, sample_rate, &block)
       end
-      
+
       def committed; commit; end
       def commit
         event :commit
       end
-      
+
       def build; built; end
       def built
         event :build
       end
-      
+
       def deploy; deployed; end
       def deployed
         event :deploy
@@ -37,11 +36,6 @@ module Fozzie
 
       def event(type)
         timing "event.#{type.to_s}", Time.now.usec
-      end
-
-      # Overload the send_stats method to automicatially prefix the data bucket string
-      def send_stats(data, sample_rate = 1)
-        super "#{@prefix}#{data}", sample_rate
       end
 
     end

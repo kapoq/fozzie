@@ -16,10 +16,9 @@ Gem::Specification.new do |s|
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
-  
-  s.add_dependency 'statsd'
-  s.add_dependency 'bson_ext'
-  
+
+  s.add_dependency 'statsd-ruby'
+
   s.add_development_dependency 'rake'
   s.add_development_dependency "rspec"
   s.add_development_dependency "mocha"

@@ -13,10 +13,10 @@ module Fozzie
 
       self
     end
-    
+
     def data_prefix
-      s = "%s." % env
-      s = appname << ".#{s}" unless appname.nil? || appname.empty?
+      s = env
+      s = [appname, s].join('.').strip unless appname.nil? || appname.empty?
       s
     end
 
@@ -36,10 +36,10 @@ module Fozzie
     # Default configuration settings
     # @return [Hash]
     def self.default_configuration
-      { 
-        :host        => '127.0.0.1', 
-        :port        => 8125, 
-        :config_path => '', 
+      {
+        :host        => '127.0.0.1',
+        :port        => 8125,
+        :config_path => '',
         :env         => (ENV['RAILS_ENV'] || 'development'),
         :appname     => ''
       }.dup
