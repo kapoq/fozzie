@@ -1,4 +1,3 @@
-require 'ostruct'
 require 'core_ext/hash'
 
 module Fozzie

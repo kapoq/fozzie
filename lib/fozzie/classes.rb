@@ -1,5 +1,4 @@
 require 'statsd'
-require 'singleton'
 
 module Fozzie
   module Classes
