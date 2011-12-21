@@ -52,7 +52,8 @@ module Fozzie
     def config_from_yaml(args)
       fp = full_config_path(args[:config_path])
       return {} unless File.exists?(fp)
-      YAML.load(File.open(fp))[args[:env]].symbolize_keys
+      cnf = YAML.load(File.open(fp))[args[:env]]
+      (cnf.kind_of?(Hash)) ? cnf.symbolize_keys : {}
     end
 
   end

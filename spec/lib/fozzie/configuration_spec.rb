@@ -30,5 +30,9 @@ describe Fozzie::Configuration do
     subject.appname = 'astoria'
     subject.data_prefix.should == 'astoria.development'
   end
+  
+  it "handles missing configuration namespace" do
+    proc { Fozzie::Configuration.new({:env => 'blbala', :config_path => 'spec/'}) }.should_not raise_error
+  end
 
 end
