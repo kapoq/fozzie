@@ -12,6 +12,13 @@ module Fozzie
         super host, port
       end
 
+      def time_for(data, &block)
+        tick = Time.now.usec
+        block.call
+        tock = Time.now.usec
+        timing(data, (tock - tick))
+      end
+
       private
 
       # Overload the send_stats method to automicatially prefix the data bucket string

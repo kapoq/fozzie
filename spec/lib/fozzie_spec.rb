@@ -16,7 +16,7 @@ describe Fozzie do
       Kernel.const_defined?(k).should == true
     end
   end
-  
+
   it "acts like its inherited parent" do
     Fozzie::Classes::NAMESPACES.each do |k|
       kl = Kernel.const_get(k)
@@ -26,16 +26,21 @@ describe Fozzie do
       kl.should respond_to(:update_counter)
     end
   end
-  
+
   it "acts an a singleton" do
     Fozzie::Classes::NAMESPACES.each do |k|
       kl1, kl2 = Kernel.const_get(k), Kernel.const_get(k)
       kl1.should == kl2
     end
   end
-  
+
   it "assigns prefix when passed" do
     Fozzie::AbstractFozzie.new(1,2, 'a').prefix.should == 'a'
+  end
+
+  it "times a given block" do
+    Stats.expects(:timing).with() {|b, val| b == 'data.bin' && (100..1200).include?(val) }
+    Stats.time_for('data.bin') { sleep 1 }
   end
 
 end
