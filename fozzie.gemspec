@@ -6,10 +6,9 @@ Gem::Specification.new do |s|
   s.name        = "fozzie"
   s.version     = Fozzie::VERSION
   s.authors     = ["Marc Watts"]
-  s.email       = ["marcw.watts@loneplanet.com"]
-  s.summary     = %q{Statistics gem for LonelyPlanet Online}
-  s.description = %q{Gem allows statistics gathering from Ruby and Ruby 
-    on Rails applications within LonelyPlanet Online}
+  s.email       = ["marcky.sharky@gmail.com"]
+  s.summary     = %q{Statsd gem bolt-on}
+  s.description = %q{Gem allows statistics gathering from Ruby and Ruby on Rails applications to Statsd}
 
   s.rubyforge_project = "fozzie"
 
