@@ -43,4 +43,22 @@ describe Fozzie do
     Stats.time_for('data.bin') { sleep 1 }
   end
 
+  it "registers a commit" do
+    Stats.expects(:timing).with('event.commit', anything).twice
+    Stats.commit
+    Stats.committed
+  end
+
+  it "registers a build" do
+    Stats.expects(:timing).with('event.build', anything).twice
+    Stats.build
+    Stats.built
+  end
+
+  it "registers a deploy" do
+    Stats.expects(:timing).with('event.deploy', anything).twice
+    Stats.deploy
+    Stats.deployed
+  end
+
 end
