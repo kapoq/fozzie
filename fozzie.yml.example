@@ -1,0 +1,15 @@
+generic: &generic
+  appname: fozzie
+  host: '127.0.0.1'
+  port: 8125
+
+development:
+  <<: *generic
+staging:
+  <<: *generic
+test:
+  <<: *generic
+ci:
+  <<: *generic
+production:
+  <<: *generic
