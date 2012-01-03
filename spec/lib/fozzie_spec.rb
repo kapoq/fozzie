@@ -62,5 +62,11 @@ describe Fozzie do
     Stats.deploy
     Stats.deployed
   end
+  
+  it "ignores exception and yields block" do
+    Stats.stubs(:time).raises(ArgumentError)
+    proc { Stats.time_for('data.bin') { sleep 1 } }.should_not raise_error
+    proc { Stats.time_to_do('data.bin') { sleep 1 } }.should_not raise_error
+  end
 
 end

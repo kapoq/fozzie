@@ -3,7 +3,6 @@ require 'statsd'
 module Fozzie
   module Classes
 
-    #class AbstractFozzie < Statsd::Client
     class AbstractFozzie < Statsd
       attr_reader :prefix
 
@@ -14,7 +13,11 @@ module Fozzie
 
       def time_to_do(stat, sample_rate=1, &block); time_for(stat, sample_rate, &block); end
       def time_for(stat, sample_rate=1, &block)
-        time(stat, sample_rate, &block)
+        begin
+          time(stat, sample_rate, &block)
+        rescue => exc
+          yield block
+        end
       end
 
       def committed; commit; end
@@ -40,7 +43,7 @@ module Fozzie
 
     end
 
-    NAMESPACES = %w{Stats S}
+    NAMESPACES = %w{Stats S Statistics Warehouse}
 
     def self.included(klass)
       host, port, prefix = Fozzie.c.host, Fozzie.c.port, Fozzie.c.data_prefix
