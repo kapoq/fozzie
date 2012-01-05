@@ -63,10 +63,14 @@ describe Fozzie do
     Stats.deployed
   end
   
-  it "ignores exception and yields block" do
-    Stats.stubs(:time).raises(ArgumentError)
+  it "ensures block is called on socket error" do
+    Stats.stubs(:time).raises(SocketError)
     proc { Stats.time_for('data.bin') { sleep 1 } }.should_not raise_error
     proc { Stats.time_to_do('data.bin') { sleep 1 } }.should_not raise_error
+  end
+  
+  it "raises exception if natural exception from block" do
+    proc { Stats.time_for('data.bin') { raise ArgumentError, "testing" } }.should raise_error(ArgumentError)
   end
 
 end

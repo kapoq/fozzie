@@ -13,10 +13,12 @@ module Fozzie
 
       def time_to_do(stat, sample_rate=1, &block); time_for(stat, sample_rate, &block); end
       def time_for(stat, sample_rate=1, &block)
+        res = nil
         begin
-          time(stat, sample_rate, &block)
-        rescue => exc
-          yield block
+          res = time(stat, sample_rate, &block)
+        rescue SocketError => exc
+          puts exc.message
+          res
         end
       end
 
