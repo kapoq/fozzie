@@ -13,13 +13,7 @@ module Fozzie
 
       def time_to_do(stat, sample_rate=1, &block); time_for(stat, sample_rate, &block); end
       def time_for(stat, sample_rate=1, &block)
-        res = nil
-        begin
-          res = time(stat, sample_rate, &block)
-        rescue SocketError => exc
-          puts exc.message
-          res
-        end
+        time(stat, sample_rate, &block)
       end
 
       def committed; commit; end
@@ -41,6 +35,14 @@ module Fozzie
 
       def event(type)
         timing "event.#{type.to_s}", Time.now.usec
+      end
+      
+      def send_to_socket(message)
+        begin
+          super(message)
+        rescue SocketError => exc
+          nil
+        end
       end
 
     end

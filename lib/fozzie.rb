@@ -6,5 +6,4 @@ require "fozzie/middleware"
 module Fozzie
   extend Fozzie::Config
   include Fozzie::Classes
-  
 end
