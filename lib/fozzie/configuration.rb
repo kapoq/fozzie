@@ -40,7 +40,7 @@ module Fozzie
         :host        => '127.0.0.1',
         :port        => 8125,
         :config_path => '',
-        :env         => (ENV['RAILS_ENV'] || 'development'),
+        :env         => (ENV['RACK_ENV'] || ENV['RAILS_ENV'] || 'development'),
         :appname     => ''
       }.dup
     end

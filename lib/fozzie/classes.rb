@@ -36,7 +36,7 @@ module Fozzie
       def event(type)
         timing "event.#{type.to_s}", Time.now.usec
       end
-      
+
       def send_to_socket(message)
         begin
           super(message)

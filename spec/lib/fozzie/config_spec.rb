@@ -10,7 +10,7 @@ describe Fozzie::Config do
   it { should respond_to(:configure) }
   it { should respond_to(:config) }
   it { should respond_to(:c) }
-  
+
   it "allows dynamic assignment" do
     {
       :host    => 'somewhere.local',
