@@ -24,5 +24,12 @@ describe Fozzie::Rails::Middleware do
     ActionController::Routing::Routes.expects(:recognize_path).with(s).returns({:controller => 'somewhere', :action => 'railsy'})
     subject.generate_key(fake_env).should == 'somewhere.railsy.render'
   end
+  
+  it "returns nil on routing error" do
+    s = '/somewhere/railsy'
+    fake_env = { 'PATH_INFO' => s }
+    ActionController::Routing::Routes.expects(:recognize_path).with(s).raises(ArgumentError)
+    subject.generate_key(fake_env).should == nil
+  end
 
 end
