@@ -115,6 +115,30 @@ describe Fozzie do
         Stats.increment_on('event.increment', a.save).should == false
       end
 
+      it "registers positive even when nested" do
+        a = mock()
+        a.expects(:save).returns(true)
+        Stats.expects(:timing).with('event.run', any_parameters)
+        Stats.expects(:increment).with("event.increment.success", 1)
+
+        res = Stats.time_to_do "event.run" do
+          Stats.increment_on('event.increment', a.save)
+        end
+        res.should == true
+      end
+      
+      it "registers negative even when nested" do
+        a = mock()
+        a.expects(:save).returns(false)
+        Stats.expects(:timing).with('event.run', any_parameters)
+        Stats.expects(:increment).with("event.increment.fail", 1)
+
+        res = Stats.time_to_do "event.run" do
+          Stats.increment_on('event.increment', a.save)
+        end
+        res.should == false
+      end
+
     end
 
   end
