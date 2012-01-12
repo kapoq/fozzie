@@ -31,11 +31,10 @@ module Fozzie
         event :deploy
       end
 
-      def increment_on(stat, bool, sample_rate=1)
-        raise ArgumentError, "value must be True or False" unless [TrueClass, FalseClass].include?(bool.class)
-        key = "#{stat}.%s" % (bool ? "success" : "fail")
+      def increment_on(stat, perf, sample_rate=1)
+        key = "#{stat}.%s" % (perf ? "success" : "fail")
         increment(key, sample_rate)
-        bool
+        perf
       end
 
       private
