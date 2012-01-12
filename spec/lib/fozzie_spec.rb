@@ -81,4 +81,24 @@ describe Fozzie do
     val.should == 1
   end
 
+  describe "#increment_on" do
+
+    it "registers success" do
+      Stats.expects(:increment).with("event.increment.success", 1)
+      Stats.increment_on('event.increment', true).should == true
+    end
+
+    it "registers failure" do
+      Stats.expects(:increment).with("event.increment.fail", 1)
+      Stats.increment_on('event.increment', false).should == false
+    end
+    
+    it "raises error on invalid value" do
+      [:monkey, "monkey", 1, 1.1, [], {}].each do |val|
+        proc { Stats.increment_on('event.increment', val) }.should raise_error(ArgumentError)
+      end
+    end
+
+  end
+
 end

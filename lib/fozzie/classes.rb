@@ -31,6 +31,13 @@ module Fozzie
         event :deploy
       end
 
+      def increment_on(stat, bool, sample_rate=1)
+        raise ArgumentError, "value must be True or False" unless [TrueClass, FalseClass].include?(bool.class)
+        key = "#{stat}.%s" % (bool ? "success" : "fail")
+        increment(key, sample_rate)
+        bool
+      end
+
       private
 
       def event(type)
