@@ -15,9 +15,8 @@ module Fozzie
     end
 
     def data_prefix
-      s = env
-      s = [appname, s].join('.').strip unless appname.nil? || appname.empty?
-      s
+      s = [appname, env].collect {|s| s.empty? ? nil : s }.compact.join('.').strip
+      (s.empty? ? nil : s)
     end
 
     private

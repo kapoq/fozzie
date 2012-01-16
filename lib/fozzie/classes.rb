@@ -26,9 +26,9 @@ module Fozzie
         event :build
       end
 
-      def deploy; deployed; end
-      def deployed
-        event :deploy
+      def deploy(app = nil); deployed(app); end
+      def deployed(app = nil)
+        event :deploy, app
       end
 
       def increment_on(stat, perf, sample_rate=1)
@@ -39,8 +39,10 @@ module Fozzie
 
       private
 
-      def event(type)
-        timing "event.#{type.to_s}", Time.now.usec
+      def event(type, app = nil)
+        stat = "event.#{type.to_s}"
+        stat << ".#{app}" unless app.nil?
+        timing stat, Time.now.usec
       end
 
       def send_to_socket(message)
