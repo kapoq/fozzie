@@ -13,6 +13,7 @@ module Fozzie
 
       def time_to_do(stat, sample_rate=1, &block); time_for(stat, sample_rate, &block); end
       def time_for(stat, sample_rate=1, &block)
+        stat = stat.flatten.join('.') if stat.kind_of?(Array)
         time(stat, sample_rate, &block)
       end
 

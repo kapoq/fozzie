@@ -146,6 +146,11 @@ describe Fozzie do
         end
         res.should == false
       end
+      
+      it "allows passing of arrays for stat key" do
+        Stats.expects(:timing).with('event.commit', any_parameters)
+        Stats.time_to_do %w{event commit} do; end
+      end
 
     end
 
