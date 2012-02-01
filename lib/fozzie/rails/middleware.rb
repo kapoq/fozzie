@@ -5,14 +5,24 @@ module Fozzie
     class Middleware < Fozzie::Rack::Middleware
 
       def generate_key(env)
-        s = env['PATH_INFO']
-        return nil if s.nil?
+        path_str = env['PATH_INFO']
+        return nil unless path_str
+
         begin
-          path = ActionController::Routing::Routes.recognize_path(s)
+          routing = (rails_version == 3 ? ::Rails.application.routes : ::ActionController::Routing::Routes)
+          path    = routing.recognize_path(path_str)
+
           [path[:controller], path[:action], "render"].join('.')
+        rescue ActionController::RoutingError => exc
+          S.increment "routing.error"
+          nil
         rescue => exc
           nil
         end
+      end
+
+      def rails_version
+        ::Rails.version.to_i
       end
 
     end
