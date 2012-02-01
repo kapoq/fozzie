@@ -61,10 +61,18 @@ describe Fozzie::Rails::Middleware do
       subject.generate_key(fake_env).should == 'somewhere.railsy.render'
     end
 
-    it "returns nil on routing error" do
+    it "returns nil on error" do
       s = '/somewhere/railsy'
       fake_env = { 'PATH_INFO' => s }
       @routing.expects(:recognize_path).with(s).raises(ArgumentError)
+      subject.generate_key(fake_env).should == nil
+    end
+    
+    it "returns nil on routing error" do
+      s = '/somewhere/railsy'
+      fake_env = { 'PATH_INFO' => s }
+      @routing.expects(:recognize_path).with(s).raises(ActionController::RoutingError)
+      S.expects(:increment).with('routing.error')
       subject.generate_key(fake_env).should == nil
     end
 
