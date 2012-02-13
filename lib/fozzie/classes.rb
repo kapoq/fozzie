@@ -4,11 +4,14 @@ module Fozzie
   module Classes
 
     class AbstractFozzie < Statsd
-      attr_reader :prefix
 
-      def initialize(host, port, prefix = nil)
-        @namespace = prefix unless prefix.nil?
-        super host, port
+      attr_reader :prefix, :configuration
+
+      def initialize
+        @namespace = Fozzie.c.data_prefix
+        super Fozzie.c.host, Fozzie.c.port
+
+        self
       end
 
       def time_to_do(stat, sample_rate=1, &block); time_for(stat, sample_rate, &block); end
@@ -48,8 +51,13 @@ module Fozzie
 
       def send_to_socket(message)
         begin
-          super(message)
-        rescue SocketError => exc
+          ip = Fozzie.c.ip_from_host
+          raise RuntimeError, "Could not locate IP" unless ip
+
+          self.class.logger.debug {"Statsd: #{message}"} if self.class.logger
+          socket.send(message, 0, ip, Fozzie.c.port)
+        rescue SocketError, RuntimeError => exc
+          self.class.logger.debug {"Statsd Failure: #{exc.message}"} if self.class.logger
           nil
         end
       end
@@ -59,10 +67,9 @@ module Fozzie
     NAMESPACES = %w{Stats S Statistics Warehouse}
 
     def self.included(klass)
-      host, port, prefix = Fozzie.c.host, Fozzie.c.port, Fozzie.c.data_prefix
       NAMESPACES.each do |klas|
         # set a constant
-        Kernel.const_set(klas, AbstractFozzie.new(host, port, prefix)) unless const_defined?(klas)
+        Kernel.const_set(klas, AbstractFozzie.new) unless const_defined?(klas)
       end
     end
 

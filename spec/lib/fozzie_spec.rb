@@ -35,10 +35,6 @@ describe Fozzie do
     end
   end
 
-  it "assigns namespace when passed" do
-    Fozzie::AbstractFozzie.new(1,2, 'a').namespace.should == 'a'
-  end
-
   it "times a given block" do
     Stats.expects(:timing).with() {|b, val, timing| b == 'data.bin' && (1000..1200).include?(val) }.twice
     Stats.time_for('data.bin') { sleep 1 }

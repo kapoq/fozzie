@@ -1,4 +1,5 @@
 require 'core_ext/hash'
+require 'resolv'
 
 module Fozzie
 
@@ -15,8 +16,16 @@ module Fozzie
     end
 
     def data_prefix
-      s = [appname, env].collect {|s| s.empty? ? nil : s }.compact.join('.').strip
+      s = [appname, origin_name, env].collect {|s| s.empty? ? nil : s.gsub('.', '-') }.compact.join('.').strip
       (s.empty? ? nil : s)
+    end
+
+    def ip_from_host
+      @ip_from_host ||= host_to_ip
+    end
+
+    def origin_name
+      @origin_name ||= %x{uname -n}.strip
     end
 
     private
@@ -36,12 +45,22 @@ module Fozzie
     # @return [Hash]
     def self.default_configuration
       {
-        :host        => '127.0.0.1',
-        :port        => 8125,
-        :config_path => '',
-        :env         => (ENV['RACK_ENV'] || ENV['RAILS_ENV'] || 'development'),
-        :appname     => ''
+        :host                => '127.0.0.1',
+        :port                => 8125,
+        :config_path         => '',
+        :env                 => (ENV['RACK_ENV'] || ENV['RAILS_ENV'] || 'development'),
+        :appname             => ''
       }.dup
+    end
+
+    def host_to_ip
+      return self.host unless self.host.match(ip_address_regex).nil?
+      ips = Resolv.getaddresses(self.host)
+      ips.compact.reject {|ip| ip.to_s.match(ip_address_regex).nil? }.first unless ips.nil?
+    end
+
+    def ip_address_regex
+      /^(?:\d{1,3}\.){3}\d{1,3}$/
     end
 
     def full_config_path(path)
