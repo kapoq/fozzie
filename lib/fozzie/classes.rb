@@ -64,10 +64,8 @@ module Fozzie
 
     end
 
-    NAMESPACES = %w{Stats S Statistics Warehouse}
-
     def self.included(klass)
-      NAMESPACES.each do |klas|
+      Fozzie.c.namespaces.each do |klas|
         # set a constant
         Kernel.const_set(klas, AbstractFozzie.new) unless const_defined?(klas)
       end

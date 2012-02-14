@@ -45,6 +45,12 @@ describe Fozzie::Configuration do
     proc { Fozzie::Configuration.new({:env => 'blbala', :config_path => 'spec/'}) }.should_not raise_error
   end
 
+  it "#namespaces" do
+    subject.namespaces.should be_kind_of(Array)
+    subject.namespaces.should include("Stats")
+    subject.namespaces.should include("S")
+  end
+
   describe "#ip_from_host" do
 
     it "returns host if host an ip" do
