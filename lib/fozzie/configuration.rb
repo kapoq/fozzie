@@ -1,5 +1,6 @@
 require 'core_ext/hash'
 require 'resolv'
+require 'timeout'
 
 module Fozzie
 
@@ -7,11 +8,12 @@ module Fozzie
   # that will be used within the Fozzie codebase.
   class Configuration
 
-    attr_accessor :env, :config_path, :host, :port, :appname, :namespaces
+    attr_accessor :env, :config_path, :host, :port, :appname, :namespaces, :timeout
 
     def initialize(args = {})
       merge_and_assign_config(args)
-
+      self.ip_from_host
+      self.origin_name
       self
     end
 
@@ -50,14 +52,19 @@ module Fozzie
         :config_path => '',
         :env         => (ENV['RACK_ENV'] || ENV['RAILS_ENV'] || 'development'),
         :appname     => '',
-        :namespaces  => %w{Stats S Statistics Warehouse}
+        :namespaces  => %w{Stats S Statistics Warehouse},
+        :timeout     => 5
       }.dup
     end
 
     def host_to_ip
       return self.host unless self.host.match(ip_address_regex).nil?
-      ips = Resolv.getaddresses(self.host)
-      ips.compact.reject {|ip| ip.to_s.match(ip_address_regex).nil? }.first unless ips.nil?
+      ips = begin 
+        Timeout.timeout(self.timeout) { Resolv.getaddresses(self.host) }
+      rescue Timeout::Error => exc
+        []
+      end
+      (ips.empty? ? "" : ips.compact.reject {|ip| ip.to_s.match(ip_address_regex).nil? }.first || "")
     end
 
     def ip_address_regex

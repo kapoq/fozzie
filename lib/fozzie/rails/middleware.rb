@@ -11,8 +11,8 @@ module Fozzie
         begin
           routing = (rails_version == 3 ? ::Rails.application.routes : ::ActionController::Routing::Routes)
           path    = routing.recognize_path(path_str)
-
-          [path[:controller], path[:action], "render"].join('.')
+          stat    = [path[:controller], path[:action], "render"].join('.')
+          stat
         rescue ActionController::RoutingError => exc
           S.increment "routing.error"
           nil
