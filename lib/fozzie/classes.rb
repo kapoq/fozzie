@@ -108,7 +108,7 @@ module Fozzie
       end
 
       def send_to_socket(message)
-        return false if Fozzie.c.ip_from_host.blank?
+        return false if Fozzie.c.ip_from_host.empty?
         begin
           self.class.logger.debug {"Statsd: #{message}"} if self.class.logger
           socket.send(message, 0, Fozzie.c.ip_from_host, Fozzie.c.port)
