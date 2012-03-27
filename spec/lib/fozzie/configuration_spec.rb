@@ -51,37 +51,4 @@ describe Fozzie::Configuration do
     subject.namespaces.should include("S")
   end
 
-  describe "#ip_from_host" do
-
-    it "returns host if host an ip" do
-      c = Fozzie::Configuration.new({:env => 'test', :config_path => nil, :host => '127.0.0.1'})
-      c.ip_from_host.should == '127.0.0.1'
-    end
-
-    it "assigns nil on miss" do
-      Resolv.expects(:getaddresses).with('some.awesome.log.server').returns([])
-      c = Fozzie::Configuration.new({:env => 'test', :config_path => nil, :host => 'some.awesome.log.server'})
-      c.ip_from_host.should == ""
-      c.ip_from_host.should == ""
-    end
-
-    it "looks up ip from host" do
-      c = Fozzie::Configuration.new({:env => 'test', :config_path => nil, :host => 'lonelyplanet.com'})
-      c.ip_from_host.should match(/^(?:\d{1,3}\.){3}\d{1,3}$/)
-    end
-
-    it "caches the ip once it is retrieved" do
-      Resolv.expects(:getaddresses).with('lonelyplanet.com').returns(["1.1.1.1"])
-      c = Fozzie::Configuration.new({:env => 'test', :config_path => nil, :host => 'lonelyplanet.com'})
-      c.ip_from_host.should == "1.1.1.1"
-    end
-
-    it "raises Timeout on slow lookup" do
-      Resolv.stubs(:getaddresses).with('lonelyplanet.com') {|val| sleep 0.6; [] }
-      c = Fozzie::Configuration.new(:env => 'test', :config_path => nil, :host => 'lonelyplanet.com', :timeout => 0.5)
-      c.ip_from_host.should == ""
-    end
-
-  end
-
 end
