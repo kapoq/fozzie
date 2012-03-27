@@ -1,3 +1,12 @@
+# Fozzie is an implementation of the Statsd statistics gathering tool,
+# designed to make gathering stastistics from applications easy, fast, and effective.
+#
+# Configuration can be applied through a block and/or configuration file ('config/fozzie.yml')
+#
+# Fozzie provides automatic namespacing for the current environment, and host.
+#
+# Rack and Rails middleware is avaliable to gather statistics on the processing time of Controller actions.
+#
 module Fozzie
 
   require_relative 'fozzie/configuration'

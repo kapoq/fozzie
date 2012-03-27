@@ -2,8 +2,12 @@ require 'fozzie/rack/middleware'
 
 module Fozzie
   module Rails
+
+    # Time and record each request through a given Rails app
+    # This middlewware times server processing for a resource, not view render.
     class Middleware < Fozzie::Rack::Middleware
 
+      # Generates the statistics key for the current path
       def generate_key(env)
         path_str = env['PATH_INFO']
         return nil unless path_str

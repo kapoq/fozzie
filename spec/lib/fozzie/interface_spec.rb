@@ -7,15 +7,14 @@ describe Fozzie::Interface do
 
   it "acts an a singleton" do
     Fozzie.c.namespaces.each do |k|
-      kl1, kl2 = Kernel.const_get(k), Kernel.const_get(k)
-      kl1.should == kl2
+      Kernel.const_get(k).should eq Fozzie::Interface.instance
     end
   end
 
   it "times a given block" do
     subject.expects(:timing).with() {|b, val, timing| b == 'data.bin' && (1000..1200).include?(val) }.twice
-    subject.time_for('data.bin') { sleep 1 }
-    subject.time_to_do('data.bin') { sleep 1 }
+    subject.time_for('data.bin')    { sleep 1 }
+    subject.time_to_do('data.bin')  { sleep 1 }
   end
 
   it "registers a commit" do

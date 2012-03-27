@@ -2,9 +2,13 @@ require 'spec_helper'
 require 'action_controller'
 
 describe Fozzie::Rails::Middleware do
+  let(:path_info) { '/somewhere/railsy' }
+  let(:fake_env)  { ({ 'PATH_INFO' => path_info }) }
 
   before :each do
-    ActionController::RoutingError = Class.new(StandardError) unless defined?(ActionController::RoutingError)
+    unless defined?(ActionController::RoutingError)
+      ActionController::RoutingError = Class.new(StandardError)
+    end
   end
 
   subject do
@@ -24,55 +28,57 @@ describe Fozzie::Rails::Middleware do
   end
 
   describe "rails 2" do
-
-    before :each do
-      RailsApp.stubs(:version).returns("2.3.1")
-    end
+    let!(:version) { RailsApp.stubs(:version).returns("2.3.1") }
 
     it "#generate_key" do
-      s = '/somewhere/railsy'
-      fake_env = { 'PATH_INFO' => s }
-      ActionController::Routing::Routes.expects(:recognize_path).with(s).returns({:controller => 'somewhere', :action => 'railsy'})
+      ActionController::Routing::Routes.expects(:recognize_path)
+        .with(path_info)
+        .returns({:controller => 'somewhere', :action => 'railsy'})
+
       subject.generate_key(fake_env).should == 'somewhere.railsy.render'
     end
 
     it "returns nil on routing error" do
-      s = '/somewhere/railsy'
-      fake_env = { 'PATH_INFO' => s }
-      ActionController::Routing::Routes.expects(:recognize_path).with(s).raises(ArgumentError)
+      ActionController::Routing::Routes.expects(:recognize_path)
+        .with(path_info)
+        .raises(ArgumentError)
+
       subject.generate_key(fake_env).should == nil
     end
 
   end
 
   describe "rails 3" do
-
-    before :each do
-      RailsApp.stubs(:version).returns("3.1.1")
-      @app, @routing = Class.new, Class.new
-      @app.stubs(:routes).returns(@routing)
-      RailsApp.stubs(:application).returns(@app)
-    end
+    let(:app)       { Class.new }
+    let(:routing)   { Class.new }
+    let!(:rails)    { RailsApp.stubs(:application).returns(app) }
+    let!(:version)  { RailsApp.stubs(:version).returns("3.1.1") }
+    let!(:routes)   { app.stubs(:routes).returns(routing)}
 
     it "#generate_key" do
-      s = '/somewhere/railsy'
-      fake_env = { 'PATH_INFO' => s }
-      @routing.expects(:recognize_path).with(s).returns({:controller => 'somewhere', :action => 'railsy'})
+      routing.expects(:recognize_path)
+        .with(path_info)
+        .returns({:controller => 'somewhere', :action => 'railsy'})
+
       subject.generate_key(fake_env).should == 'somewhere.railsy.render'
     end
 
     it "returns nil on error" do
-      s = '/somewhere/railsy'
-      fake_env = { 'PATH_INFO' => s }
-      @routing.expects(:recognize_path).with(s).raises(ArgumentError)
+      routing.expects(:recognize_path)
+        .with(path_info)
+        .raises(ArgumentError)
+
       subject.generate_key(fake_env).should == nil
     end
-    
+
     it "returns nil on routing error" do
-      s = '/somewhere/railsy'
-      fake_env = { 'PATH_INFO' => s }
-      @routing.expects(:recognize_path).with(s).raises(ActionController::RoutingError)
-      S.expects(:increment).with('routing.error')
+      routing.expects(:recognize_path)
+        .with(path_info)
+        .raises(ActionController::RoutingError)
+
+      S.expects(:increment)
+        .with('routing.error')
+
       subject.generate_key(fake_env).should == nil
     end
 

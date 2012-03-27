@@ -5,11 +5,9 @@ require 'rack/test'
 describe Fozzie::Rack::Middleware do
 
   subject do
-    RackApp = Class.new do
-      def call(env)
-        env
-      end
-    end unless defined?(RackApp)
+    unless defined?(RackApp)
+      RackApp = Class.new { def call(env); env end } 
+    end
     Fozzie::Rack::Middleware.new RackApp.new
   end
 

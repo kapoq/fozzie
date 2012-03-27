@@ -31,6 +31,67 @@
     </tr>
   </thead>
   <tbody>
+    <tr id='section-1'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-1">&#182;</a>
+        </div>
+        
+      </td>
+      <td class=code>
+        <div class='highlight'><pre><span class="nb">require</span> <span class="s1">&#39;fozzie/rack/middleware&#39;</span>
+
+<span class="k">module</span> <span class="nn">Fozzie</span>
+  <span class="k">module</span> <span class="nn">Rails</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-2'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-2">&#182;</a>
+        </div>
+        <p>Time and record each request through a given Rails app
+This middlewware times server processing for a resource, not view render.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="k">class</span> <span class="nc">Middleware</span> <span class="o">&lt;</span> <span class="no">Fozzie</span><span class="o">::</span><span class="no">Rack</span><span class="o">::</span><span class="no">Middleware</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-3'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-3">&#182;</a>
+        </div>
+        <p>Generates the statistics key for the current path</p>
+
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>      <span class="k">def</span> <span class="nf">generate_key</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
+        <span class="n">path_str</span> <span class="o">=</span> <span class="n">env</span><span class="o">[</span><span class="s1">&#39;PATH_INFO&#39;</span><span class="o">]</span>
+        <span class="k">return</span> <span class="kp">nil</span> <span class="k">unless</span> <span class="n">path_str</span>
+
+        <span class="k">begin</span>
+          <span class="n">routing</span> <span class="o">=</span> <span class="p">(</span><span class="n">rails_version</span> <span class="o">==</span> <span class="mi">3</span> <span class="o">?</span> <span class="o">::</span><span class="no">Rails</span><span class="o">.</span><span class="n">application</span><span class="o">.</span><span class="n">routes</span> <span class="p">:</span> <span class="o">::</span><span class="no">ActionController</span><span class="o">::</span><span class="no">Routing</span><span class="o">::</span><span class="no">Routes</span><span class="p">)</span>
+          <span class="n">path</span>    <span class="o">=</span> <span class="n">routing</span><span class="o">.</span><span class="n">recognize_path</span><span class="p">(</span><span class="n">path_str</span><span class="p">)</span>
+          <span class="n">stat</span>    <span class="o">=</span> <span class="o">[</span><span class="n">path</span><span class="o">[</span><span class="ss">:controller</span><span class="o">]</span><span class="p">,</span> <span class="n">path</span><span class="o">[</span><span class="ss">:action</span><span class="o">]</span><span class="p">,</span> <span class="s2">&quot;render&quot;</span><span class="o">].</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+          <span class="n">stat</span>
+        <span class="k">rescue</span> <span class="no">ActionController</span><span class="o">::</span><span class="no">RoutingError</span> <span class="o">=&gt;</span> <span class="n">exc</span>
+          <span class="n">S</span><span class="o">.</span><span class="n">increment</span> <span class="s2">&quot;routing.error&quot;</span>
+          <span class="kp">nil</span>
+        <span class="k">rescue</span> <span class="o">=&gt;</span> <span class="n">exc</span>
+          <span class="kp">nil</span>
+        <span class="k">end</span>
+      <span class="k">end</span>
+
+      <span class="k">def</span> <span class="nf">rails_version</span>
+        <span class="o">::</span><span class="no">Rails</span><span class="o">.</span><span class="n">version</span><span class="o">.</span><span class="n">to_i</span>
+      <span class="k">end</span>
+
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span></pre></div>
+      </td>
+    </tr>
   </table>
 </div>
 </body>

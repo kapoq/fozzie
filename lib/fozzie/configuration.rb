@@ -18,7 +18,9 @@ module Fozzie
 
     # Returns the prefix for any stat requested to be registered
     def data_prefix
-      s = [appname, origin_name, env].collect {|s| s.empty? ? nil : s.gsub('.', '-') }.compact.join('.').strip
+      s = [appname, origin_name, env].collect do |s|
+        s.empty? ? nil : s.gsub('.', '-')
+      end.compact.join('.').strip
       (s.empty? ? nil : s)
     end
 
@@ -32,9 +34,8 @@ module Fozzie
     # Handle the merging of the given configuaration, and the default config.
     def merge_and_assign_config(args = {})
       arg = self.class.default_configuration.merge(args.symbolize_keys)
-      arg.delete_if {|key, val| !self.respond_to?(key.to_sym) }
       arg.merge!(config_from_yaml(arg))
-      arg.each {|a,v| self.send("#{a}=", v) }
+      arg.each {|a,v| self.send("#{a}=", v) if self.respond_to?(a.to_sym) }
 
       arg
     end
