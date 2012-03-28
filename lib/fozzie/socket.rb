@@ -6,12 +6,17 @@ module Fozzie
     private
 
     # Send the statistic to the server
+    #
+    # Creates the Statsd key from the given values, and sends to socket (depending on sample rate)
+    #
     def send(stat, delta, type, sample_rate)
-      prefix = "%s." % Fozzie.c.data_prefix unless Fozzie.c.data_prefix.nil?
-      stat   = stat.to_s.gsub('::', '.').gsub(RESERVED_CHARS_REGEX, '_')
+      stat = [stat].flatten.compact.collect(&:to_s).join('.').downcase
+      stat = stat.gsub('::', '.').gsub(RESERVED_CHARS_REGEX, '_')
 
-      k = "%s%s:%s|%s" % [prefix, stat, delta, type]
-      k << '|@%s' % sample_rate.to_s if sample_rate < 1
+      k =  [Fozzie.c.data_prefix, stat].compact.join('.')
+      k << ":"
+      k << [delta, type].join('|')
+      k << '@%s' % sample_rate.to_s if sample_rate < 1
 
       sampled(sample_rate) { send_to_socket(k.strip) }
     end
@@ -30,7 +35,7 @@ module Fozzie
           true
         }
       rescue => exc
-        Fozzie.ogger.debug {"Statsd Failure: #{exc.message}\n#{exc.backtrace}"} if Fozzie.logger
+        Fozzie.logger.debug {"Statsd Failure: #{exc.message}\n#{exc.backtrace}"} if Fozzie.logger
         false
       end
     end

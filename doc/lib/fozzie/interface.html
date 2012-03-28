@@ -118,7 +118,6 @@
       </td>
       <td class=code>
         <div class='highlight'><pre>    <span class="k">def</span> <span class="nf">time</span><span class="p">(</span><span class="n">stat</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-      <span class="n">stat</span>   <span class="o">=</span> <span class="n">stat</span><span class="o">.</span><span class="n">flatten</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">stat</span><span class="o">.</span><span class="n">kind_of?</span><span class="p">(</span><span class="nb">Array</span><span class="p">)</span>
       <span class="n">start</span>  <span class="o">=</span> <span class="no">Time</span><span class="o">.</span><span class="n">now</span>
       <span class="n">result</span> <span class="o">=</span> <span class="k">yield</span>
       <span class="n">timing</span><span class="p">(</span><span class="n">stat</span><span class="p">,</span> <span class="p">((</span><span class="no">Time</span><span class="o">.</span><span class="n">now</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">)</span>
@@ -257,7 +256,7 @@
       </td>
       <td class=code>
         <div class='highlight'><pre>    <span class="k">def</span> <span class="nf">increment_on</span><span class="p">(</span><span class="n">stat</span><span class="p">,</span> <span class="n">perf</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-      <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">stat</span><span class="si">}</span><span class="s2">.%s&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">perf</span> <span class="p">?</span> <span class="s2">&quot;success&quot;</span> <span class="p">:</span> <span class="s2">&quot;fail&quot;</span><span class="p">)</span>
+      <span class="n">key</span> <span class="o">=</span> <span class="o">[</span><span class="n">stat</span><span class="p">,</span> <span class="p">(</span><span class="n">perf</span> <span class="p">?</span> <span class="s2">&quot;success&quot;</span> <span class="p">:</span> <span class="s2">&quot;fail&quot;</span><span class="p">)</span><span class="o">]</span>
       <span class="n">increment</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">)</span>
       <span class="n">perf</span>
     <span class="k">end</span></pre></div>
@@ -275,8 +274,7 @@
       </td>
       <td class=code>
         <div class='highlight'><pre>    <span class="k">def</span> <span class="nf">event</span><span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="n">app</span> <span class="o">=</span> <span class="kp">nil</span><span class="p">)</span>
-      <span class="n">stat</span> <span class="o">=</span> <span class="o">[</span><span class="s2">&quot;event&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">.</span><span class="n">to_s</span><span class="p">,</span> <span class="n">app</span><span class="o">].</span><span class="n">compact</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
-      <span class="n">timing</span> <span class="n">stat</span><span class="p">,</span> <span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">usec</span>
+      <span class="n">timing</span> <span class="o">[</span><span class="s2">&quot;event&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">.</span><span class="n">to_s</span><span class="p">,</span> <span class="n">app</span><span class="o">]</span><span class="p">,</span> <span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">usec</span>
     <span class="k">end</span>
 
   <span class="k">end</span>

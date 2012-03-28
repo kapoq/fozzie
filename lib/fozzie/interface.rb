@@ -37,7 +37,6 @@ module Fozzie
     #
     # `Stats.time 'wat' { # Do something... }`
     def time(stat, sample_rate=1)
-      stat   = stat.flatten.join('.') if stat.kind_of?(Array)
       start  = Time.now
       result = yield
       timing(stat, ((Time.now - start) * 1000).round, sample_rate)
@@ -104,7 +103,7 @@ module Fozzie
     #
     # `Stats.increment_on 'wat', wat.random?`
     def increment_on(stat, perf, sample_rate=1)
-      key = "#{stat}.%s" % (perf ? "success" : "fail")
+      key = [stat, (perf ? "success" : "fail")]
       increment(key, sample_rate)
       perf
     end
@@ -113,8 +112,7 @@ module Fozzie
     #
     # `Stats.event 'wat', 'app'`
     def event(type, app = nil)
-      stat = ["event", type.to_s, app].compact.join('.')
-      timing stat, Time.now.usec
+      timing ["event", type.to_s, app], Time.now.usec
     end
 
   end
