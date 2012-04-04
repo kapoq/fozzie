@@ -1,3 +1,5 @@
+require 'socket'
+
 module Fozzie
   module Socket
 
@@ -42,7 +44,7 @@ module Fozzie
 
     # The Socket we want to use to send data
     def socket
-      @socket ||= UDPSocket.new
+      @socket ||= ::UDPSocket.new
     end
 
   end

@@ -36,11 +36,16 @@ module Fozzie
     end
 
     # Set a logger
+    #
+    #
+    # `Fozzie.logger = Logger.new(STDOUT)`
     def logger=(logger)
       @logger = logger
     end
 
     # Accessor for logger
+    #
+    # `Fozzie.logger.warn 'foo'`
     def logger
       @logger
     end

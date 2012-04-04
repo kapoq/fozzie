@@ -167,8 +167,9 @@ When working on your development machine. This allows multiple application insta
 The current implementation of Fozzie wraps the sending of the statistic in a timeout and rescue block, which prevent long host lookups (i.e. if your stats server disappears) and minimises impact on your code or application if something is erroring at a low level.
 
 Fozzie will try to log these errors, but only if a logger has been applied (which by default it does not). Examples:
-
-    Fozzie.logger = STDOUT
+  
+    require 'logger'
+    Fozzie.logger = Logger.new(STDOUT)
 
     require 'logger'
     Fozzie.logger = Logger.new 'log/fozzie.log'
