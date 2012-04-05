@@ -9,12 +9,12 @@
 #
 module Fozzie
 
-  require_relative 'fozzie/configuration'
-  require_relative "fozzie/interface"
-  require_relative "fozzie/version"
+  require 'fozzie/configuration'
+  require "fozzie/interface"
+  require "fozzie/version"
 
-  require_relative "fozzie/rack/middleware"
-  require_relative "fozzie/rails/middleware"
+  require "fozzie/rack/middleware"
+  require "fozzie/rails/middleware"
 
   class << self
 
