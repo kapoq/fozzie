@@ -1,3 +1,4 @@
+require 'yaml'
 require 'core_ext/hash'
 require 'sys/uname'
 require 'timeout'
