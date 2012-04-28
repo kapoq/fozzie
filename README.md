@@ -144,11 +144,7 @@ To time and register the controller actions within your Rails application, Fozzi
 
 Based on the Rack middleware above, but is more involved in it's construction of the bucket value.
 
-Add the following to your `config/environment.rb`
-
-    Rails::Initializer.run do |config|
-      config.middleware.use 'Fozzie::Rails::Middleware'
-    end
+Fozzie::Rails::Middleware will automatically be invoked on Rails initialization.
 
 ## Bucket name prefixes
 
@@ -176,6 +172,10 @@ Fozzie will try to log these errors, but only if a logger has been applied (whic
 
 This may change, depending on feedback and more production experience.
 
+## Rails User Interface Performance Measuring
+
+If you also require UI metrics, you can also include the Mill script in the bottom of any page you would like to measure (see `resources/mill.js` and `resources/mill.min.js`) and you start receiving measurements on page performance.
+
 ## Credits
 
 Currently supported and maintained by [Marc Watts](marc.watts@lonelyplanet.co.uk) @Lonely Planet Online.
@@ -186,7 +186,7 @@ Big thanks to:
 
 * [Etsy](http://codeascraft.etsy.com/) who's [Statsd](https://github.com/etsy/statsd) product has enabled us to come such a long way in a very short period of time. We love Etsy.
 
-* [https://github.com/reinh](https://github.com/reinh/statsd) for his [statsd](https://github.com/reinh/statsd) Gem.
+* [reinh](https://github.com/reinh/statsd) for his [statsd](https://github.com/reinh/statsd) Gem.
 
 ## Comments and Feedback
 

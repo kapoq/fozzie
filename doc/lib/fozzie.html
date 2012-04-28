@@ -16,8 +16,11 @@
           <a class="source" href="fozzie.html">fozzie.rb</a>
           <a class="source" href="fozzie/configuration.html">configuration.rb</a>
           <a class="source" href="fozzie/interface.html">interface.rb</a>
+          <a class="source" href="fozzie/mill.html">mill.rb</a>
           <a class="source" href="fozzie/rack/middleware.html">middleware.rb</a>
+          <a class="source" href="fozzie/rails/engine.html">engine.rb</a>
           <a class="source" href="fozzie/rails/middleware.html">middleware.rb</a>
+          <a class="source" href="fozzie/railtie.html">railtie.rb</a>
           <a class="source" href="fozzie/socket.html">socket.rb</a>
           <a class="source" href="fozzie/version.html">version.rb</a>
       </div>
@@ -54,6 +57,8 @@ designed to make gathering stastistics from applications easy, fast, and effecti
 
   <span class="nb">require</span> <span class="s2">&quot;fozzie/rack/middleware&quot;</span>
   <span class="nb">require</span> <span class="s2">&quot;fozzie/rails/middleware&quot;</span>
+
+  <span class="nb">require</span> <span class="s1">&#39;fozzie/railtie&#39;</span> <span class="k">if</span> <span class="n">defined?</span><span class="p">(</span><span class="o">::</span><span class="no">Rails</span><span class="p">)</span>
 
   <span class="k">class</span> <span class="o">&lt;&lt;</span> <span class="nb">self</span></pre></div>
       </td>

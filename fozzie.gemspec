@@ -36,4 +36,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'guard-rspec'
   s.add_development_dependency 'guard-rocco'
   s.add_development_dependency 'fl-rocco'
+
+  s.add_development_dependency 'ruby_gntp'
 end

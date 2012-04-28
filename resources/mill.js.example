@@ -1,0 +1,27 @@
+// Mill-Snippet_0.0.1
+(function($){
+  var __mill__ = function() {
+    var c=[window.navigator,window.performance.timing], d=[], t, a, script, s;
+    for(n in c){
+      if(c[n]){
+        t=c[n];
+        for(a in c[n]){
+          if(a && (typeof(t[a])!=='function'&& typeof(t[a])!=='object')){
+            d.push(a);
+            d.push(escape(t[a]));
+          }
+        }
+      }
+    }
+    d.push('href');
+    d.push(window.location.href);
+    script = document.createElement('script');
+    script.src = "/mill?d=" + d.join(';');
+    script.async = true;
+    s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(script, s);
+  };
+  if(window.addEventListener){
+    window.addEventListener('load', function(){__mill__();}, false);
+  }
+}).call($);
