@@ -21,6 +21,7 @@
           <a class="source" href="fozzie/rails/engine.html">engine.rb</a>
           <a class="source" href="fozzie/rails/middleware.html">middleware.rb</a>
           <a class="source" href="fozzie/railtie.html">railtie.rb</a>
+          <a class="source" href="fozzie/sniff.html">sniff.rb</a>
           <a class="source" href="fozzie/socket.html">socket.rb</a>
           <a class="source" href="fozzie/version.html">version.rb</a>
       </div>
@@ -60,7 +61,11 @@ designed to make gathering stastistics from applications easy, fast, and effecti
 
   <span class="nb">require</span> <span class="s1">&#39;fozzie/railtie&#39;</span> <span class="k">if</span> <span class="n">defined?</span><span class="p">(</span><span class="o">::</span><span class="no">Rails</span><span class="p">)</span>
 
-  <span class="k">class</span> <span class="o">&lt;&lt;</span> <span class="nb">self</span></pre></div>
+  <span class="k">class</span> <span class="o">&lt;&lt;</span> <span class="nb">self</span>
+
+    <span class="k">def</span> <span class="nf">enable_sniff!</span>
+      <span class="no">Fozzie</span><span class="o">::</span><span class="no">Sniff</span><span class="o">.</span><span class="n">enable!</span>
+    <span class="k">end</span></pre></div>
       </td>
     </tr>
     <tr id='section-2'>

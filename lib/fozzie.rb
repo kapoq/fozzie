@@ -20,6 +20,10 @@ module Fozzie
 
   class << self
 
+    def enable_sniff!
+      Fozzie::Sniff.enable!
+    end
+
     # Shortcut for `Fozzie.config`
     def c
       config

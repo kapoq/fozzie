@@ -21,6 +21,7 @@
           <a class="source" href="rails/engine.html">engine.rb</a>
           <a class="source" href="rails/middleware.html">middleware.rb</a>
           <a class="source" href="railtie.html">railtie.rb</a>
+          <a class="source" href="sniff.html">sniff.rb</a>
           <a class="source" href="socket.html">socket.rb</a>
           <a class="source" href="version.html">version.rb</a>
       </div>
@@ -62,11 +63,19 @@ that will be used within the Fozzie codebase.</p>
         <div class='highlight'><pre>  <span class="k">class</span> <span class="nc">Configuration</span>
     <span class="kp">include</span> <span class="no">Sys</span>
 
-    <span class="kp">attr_accessor</span> <span class="ss">:env</span><span class="p">,</span> <span class="ss">:config_path</span><span class="p">,</span> <span class="ss">:host</span><span class="p">,</span> <span class="ss">:port</span><span class="p">,</span> <span class="ss">:appname</span><span class="p">,</span> <span class="ss">:namespaces</span><span class="p">,</span> <span class="ss">:timeout</span>
+    <span class="kp">attr_accessor</span> <span class="ss">:env</span><span class="p">,</span> <span class="ss">:config_path</span><span class="p">,</span> <span class="ss">:host</span><span class="p">,</span> <span class="ss">:port</span><span class="p">,</span> <span class="ss">:appname</span><span class="p">,</span> <span class="ss">:namespaces</span><span class="p">,</span> <span class="ss">:timeout</span><span class="p">,</span> <span class="ss">:monitor_classes</span>
 
     <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">args</span> <span class="o">=</span> <span class="p">{})</span>
       <span class="n">merge_and_assign_config</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
       <span class="nb">self</span><span class="o">.</span><span class="n">origin_name</span>
+    <span class="k">end</span>
+
+    <span class="k">def</span> <span class="nf">add_monitor_class</span><span class="p">(</span><span class="n">klass</span><span class="p">)</span>
+      <span class="nb">self</span><span class="o">.</span><span class="n">monitor_classes</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">klass</span><span class="p">)</span>
+    <span class="k">end</span>
+
+    <span class="k">def</span> <span class="nf">want_to_monitor?</span><span class="p">(</span><span class="n">klass</span><span class="p">)</span>
+      <span class="nb">self</span><span class="o">.</span><span class="n">monitor_classes</span><span class="o">.</span><span class="n">include?</span><span class="p">(</span><span class="n">klass</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">to_sym</span><span class="p">)</span>
     <span class="k">end</span></pre></div>
       </td>
     </tr>
@@ -128,13 +137,14 @@ that will be used within the Fozzie codebase.</p>
       <td class=code>
         <div class='highlight'><pre>    <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">default_configuration</span>
       <span class="p">{</span>
-        <span class="ss">:host</span>        <span class="o">=&gt;</span> <span class="s1">&#39;127.0.0.1&#39;</span><span class="p">,</span>
-        <span class="ss">:port</span>        <span class="o">=&gt;</span> <span class="mi">8125</span><span class="p">,</span>
-        <span class="ss">:config_path</span> <span class="o">=&gt;</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-        <span class="ss">:env</span>         <span class="o">=&gt;</span> <span class="p">(</span><span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;RACK_ENV&#39;</span><span class="o">]</span> <span class="o">||</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;RAILS_ENV&#39;</span><span class="o">]</span> <span class="o">||</span> <span class="s1">&#39;development&#39;</span><span class="p">),</span>
-        <span class="ss">:appname</span>     <span class="o">=&gt;</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-        <span class="ss">:namespaces</span>  <span class="o">=&gt;</span> <span class="sx">%w{Stats S Statistics Warehouse}</span><span class="p">,</span>
-        <span class="ss">:timeout</span>     <span class="o">=&gt;</span> <span class="mi">0</span><span class="o">.</span><span class="mi">5</span>
+        <span class="ss">:host</span>            <span class="o">=&gt;</span> <span class="s1">&#39;127.0.0.1&#39;</span><span class="p">,</span>
+        <span class="ss">:port</span>            <span class="o">=&gt;</span> <span class="mi">8125</span><span class="p">,</span>
+        <span class="ss">:config_path</span>     <span class="o">=&gt;</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+        <span class="ss">:env</span>             <span class="o">=&gt;</span> <span class="p">(</span><span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;RACK_ENV&#39;</span><span class="o">]</span> <span class="o">||</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;RAILS_ENV&#39;</span><span class="o">]</span> <span class="o">||</span> <span class="s1">&#39;development&#39;</span><span class="p">),</span>
+        <span class="ss">:appname</span>         <span class="o">=&gt;</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+        <span class="ss">:namespaces</span>      <span class="o">=&gt;</span> <span class="sx">%w{Stats S Statistics Warehouse}</span><span class="p">,</span>
+        <span class="ss">:timeout</span>         <span class="o">=&gt;</span> <span class="mi">0</span><span class="o">.</span><span class="mi">5</span><span class="p">,</span>
+        <span class="ss">:monitor_classes</span> <span class="o">=&gt;</span> <span class="o">[]</span>
       <span class="p">}</span><span class="o">.</span><span class="n">dup</span>
     <span class="k">end</span></pre></div>
       </td>

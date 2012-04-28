@@ -10,11 +10,19 @@ module Fozzie
   class Configuration
     include Sys
 
-    attr_accessor :env, :config_path, :host, :port, :appname, :namespaces, :timeout
+    attr_accessor :env, :config_path, :host, :port, :appname, :namespaces, :timeout, :monitor_classes
 
     def initialize(args = {})
       merge_and_assign_config(args)
       self.origin_name
+    end
+
+    def add_monitor_class(klass)
+      self.monitor_classes.push(klass)
+    end
+
+    def want_to_monitor?(klass)
+      self.monitor_classes.include?(klass.name.to_sym)
     end
 
     # Returns the prefix for any stat requested to be registered
@@ -44,13 +52,14 @@ module Fozzie
     # Default configuration settings
     def self.default_configuration
       {
-        :host        => '127.0.0.1',
-        :port        => 8125,
-        :config_path => '',
-        :env         => (ENV['RACK_ENV'] || ENV['RAILS_ENV'] || 'development'),
-        :appname     => '',
-        :namespaces  => %w{Stats S Statistics Warehouse},
-        :timeout     => 0.5
+        :host            => '127.0.0.1',
+        :port            => 8125,
+        :config_path     => '',
+        :env             => (ENV['RACK_ENV'] || ENV['RAILS_ENV'] || 'development'),
+        :appname         => '',
+        :namespaces      => %w{Stats S Statistics Warehouse},
+        :timeout         => 0.5,
+        :monitor_classes => []
       }.dup
     end
 
