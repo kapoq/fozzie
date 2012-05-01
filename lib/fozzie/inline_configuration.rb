@@ -5,6 +5,10 @@ module Fozzie
     end
 
     module ClassMethods
+      def singleton_method_added(m)
+        register_method(m, self) if time_next_method_added?
+      end
+
       def time_with_fozzie
         @time_next_method_added = true
       end
@@ -12,18 +16,17 @@ module Fozzie
       def time_next_method_added?
         @time_next_method_added ||= false
       end
-      
-      def method_added(*args)
-        register_method(*args) if time_next_method_added?
+        
+      def method_added(m)
+        register_method(m, self) if time_next_method_added?
       end
 
-      def register_method(m)
+      def register_method(m, obj)
         @time_next_method_added = false
-        alias_method_chain(m, :fozzie_logging) do |aliased_target, punctuation|
-          define_method("#{aliased_target}_with_fozzie_logging") do |*args|
-            S.time_for(m) do
-              send(aliased_target, *args)
-            end
+
+        obj.alias_method_chain(m, :fozzie_logging) do |aliased_target, punctuation|
+          obj.send(:define_method, "#{aliased_target}_with_fozzie_logging") do |*args|
+            S.time_for(m) { obj.send(aliased_target, *args) }
           end
         end
       end
