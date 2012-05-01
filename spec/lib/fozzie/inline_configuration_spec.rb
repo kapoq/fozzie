@@ -74,7 +74,7 @@ describe Fozzie::Inline do
   describe ".register_method" do
     it "sets up an alias method chain for the object with the given method name and the suffix :fozzie_logging" do
       dummy_class.expects(:alias_method_chain).with(:foo, :fozzie_logging)
-      dummy_class.register_method(:foo)
+      dummy_class.register_method(:foo, dummy_class)
     end
   end
 end
