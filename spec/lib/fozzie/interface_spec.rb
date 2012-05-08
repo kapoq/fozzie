@@ -37,9 +37,9 @@ describe Fozzie::Interface do
   end
 
   it "times a given block" do
-    subject.expects(:timing).with() {|b, val, timing| b == 'data.bin' && (1000..1200).include?(val) }.twice
-    subject.time_for('data.bin')    { sleep 1 }
-    subject.time_to_do('data.bin')  { sleep 1 }
+    subject.expects(:timing).with() {|b, val, timing| b == 'data.bin' && (1..11).include?(val) }.twice
+    subject.time_for('data.bin')    { sleep 0.01 }
+    subject.time_to_do('data.bin')  { sleep 0.01 }
   end
 
   it "registers a commit" do
@@ -62,8 +62,8 @@ describe Fozzie::Interface do
 
   it "ensures block is called on socket error" do
     UDPSocket.any_instance.stubs(:send).raises(SocketError)
-    proc { subject.time_for('data.bin') { sleep 1 } }.should_not raise_error
-    proc { subject.time_to_do('data.bin') { sleep 1 } }.should_not raise_error
+    proc { subject.time_for('data.bin')   { sleep 0.01 } }.should_not raise_error
+    proc { subject.time_to_do('data.bin') { sleep 0.01 } }.should_not raise_error
   end
 
   it "raises exception if natural exception from block" do
@@ -79,7 +79,8 @@ describe Fozzie::Interface do
   end
 
   it "raises Timeout on slow lookup" do
-    UDPSocket.any_instance.stubs(:send).with(any_parameters) { sleep 0.6 }
+    Fozzie.c.timeout = 0.01
+    UDPSocket.any_instance.stubs(:send).with(any_parameters) { sleep 0.4 }
     subject.increment('data.bin').should eq false
   end
 

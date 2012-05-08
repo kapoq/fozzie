@@ -10,7 +10,6 @@
 module Fozzie
 
   require 'fozzie/configuration'
-  require 'fozzie/inline_configuration'
   require "fozzie/interface"
   require "fozzie/version"
 
