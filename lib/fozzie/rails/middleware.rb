@@ -13,16 +13,18 @@ module Fozzie
         return nil unless path_str
 
         begin
-          routing = (rails_version == 3 ? ::Rails.application.routes : ::ActionController::Routing::Routes)
+          routing = routing_lookup
           path    = routing.recognize_path(path_str)
           stat    = [path[:controller], path[:action], "render"].join('.')
           stat
-        rescue ActionController::RoutingError => exc
+        rescue => exc
           S.increment "routing.error"
           nil
-        rescue => exc
-          nil
         end
+      end
+
+      def routing_lookup
+        (rails_version == 3 ? ::Rails.application.routes : ::ActionController::Routing::Routes)
       end
 
       def rails_version
