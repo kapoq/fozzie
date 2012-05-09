@@ -6,10 +6,26 @@ module Fozzie
     def self.included(klass)
       return if klass.include?(ClassMethods)
 
-      klass.class_eval { include ClassMethods }
+      klass.class_eval { extend ClassMethods }
     end
 
     module ClassMethods
+
+      def _monitor
+        @_monitor_flag = true
+      end
+
+      def _monitor_meth(target, &blk)
+        return if @_monitor_flag.nil? || !@_monitor_flag
+
+        @_monitor_flag, feature, bin = false, :monitor, [self.name, target.to_s]
+        aliased_target, punctuation  = target.to_s.sub(/([?!=])$/, ''), $1
+
+        with    = "#{aliased_target}_with_#{feature}#{punctuation}"
+        without = "#{aliased_target}_without_#{feature}#{punctuation}"
+
+        blk.call(with, without, feature, bin)
+      end
 
       def method_added(target)
         _monitor_meth(target) do |with, without, feature, bin|
@@ -29,25 +45,7 @@ module Fozzie
         end
       end
 
-      def _monitor
-        @_monitor_flag = true
-      end
-
-      def _monitor_meth(target, &blk)
-        return if @_monitor_flag.nil? || !@_monitor_flag
-
-        @_monitor_flag, feature, bin = false, :monitor, [self.name, target.to_s]
-        aliased_target, punctuation  = target.to_s.sub(/([?!=])$/, ''), $1
-
-        with    = "#{aliased_target}_with_#{feature}#{punctuation}"
-        without = "#{aliased_target}_without_#{feature}#{punctuation}"
-
-        blk.call(with, without, feature, bin)
-      end
-
     end
 
   end
 end
-
-#Class.module_eval { include(Fozzie::Sniff) }
