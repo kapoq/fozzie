@@ -3,39 +3,38 @@ require 'fozzie/sniff'
 
 describe Fozzie::Sniff do
 
-  class FooBar
-    include Fozzie::Sniff
-
-    _monitor
-    def self.bar!
-      :bar
-    end
-
-    _monitor
-    def self.koala(hsh = {})
-      hsh
-    end
-
-    def self.badger
-      :cares
-    end
-
-    _monitor
-    def foo
-      :foo
-    end
-
-    _monitor
-    def sloth(a, b, c)
-      [a,b,c]
-    end
-
-    def honeybadger
-      :dontcare
-    end
-  end
-
   subject do
+    class FooBar
+
+      _monitor
+      def self.bar!
+        :bar
+      end
+
+      _monitor
+      def self.koala(hsh = {})
+        hsh
+      end
+
+      def self.badger
+        :cares
+      end
+
+      _monitor
+      def foo
+        :foo
+      end
+
+      _monitor
+      def sloth(a, b, c)
+        [a,b,c]
+      end
+
+      def honeybadger
+        :dontcare
+      end
+    end
+
     FooBar
   end
 

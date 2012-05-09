@@ -1,3 +1,4 @@
+require 'core_ext/module/monitor'
 require 'facets'
 
 module Fozzie
