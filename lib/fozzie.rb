@@ -9,6 +9,8 @@
 #
 module Fozzie
 
+  require 'core_ext/module/monitor'
+
   require 'fozzie/configuration'
   require "fozzie/interface"
   require "fozzie/version"
@@ -17,8 +19,6 @@ module Fozzie
   require "fozzie/rails/middleware"
 
   require 'fozzie/railtie' if defined?(::Rails)
-
-  require 'fozzie/sniff'
 
   class << self
 
