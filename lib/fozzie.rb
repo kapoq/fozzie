@@ -18,11 +18,9 @@ module Fozzie
 
   require 'fozzie/railtie' if defined?(::Rails)
 
-  class << self
+  require 'fozzie/sniff'
 
-    def enable_sniff!
-      Fozzie::Sniff.enable!
-    end
+  class << self
 
     # Shortcut for `Fozzie.config`
     def c

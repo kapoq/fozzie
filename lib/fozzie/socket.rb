@@ -33,8 +33,9 @@ module Fozzie
       begin
         Fozzie.logger.debug {"Statsd: #{message}"} if Fozzie.logger
         Timeout.timeout(Fozzie.c.timeout) {
-          socket.send(message, 0, Fozzie.c.host, Fozzie.c.port)
-          true
+          res = socket.send(message, 0, Fozzie.c.host, Fozzie.c.port)
+          Fozzie.logger.debug {"Statsd sent: #{res}"} if Fozzie.logger
+          (res.to_i == message.length)
         }
       rescue => exc
         Fozzie.logger.debug {"Statsd Failure: #{exc.message}\n#{exc.backtrace}"} if Fozzie.logger

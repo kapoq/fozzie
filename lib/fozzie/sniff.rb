@@ -1,5 +1,6 @@
 require 'core_ext/module/monitor'
-require 'facets'
+require 'facets/module/alias_method_chain' unless Module.methods.include?(:alias_method_chain)
+require 'facets/string/snakecase'
 
 module Fozzie
   module Sniff
@@ -19,7 +20,7 @@ module Fozzie
       def _monitor_meth(target, &blk)
         return if @_monitor_flag.nil? || !@_monitor_flag
 
-        @_monitor_flag, feature, bin = false, :monitor, [self.name, target.to_s]
+        @_monitor_flag, feature, bin = false, :monitor, [self.name.snakecase, target.to_s.snakecase]
         aliased_target, punctuation  = target.to_s.sub(/([?!=])$/, ''), $1
 
         with    = "#{aliased_target}_with_#{feature}#{punctuation}"

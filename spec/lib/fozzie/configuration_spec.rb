@@ -51,4 +51,38 @@ describe Fozzie::Configuration do
     subject.namespaces.should include("S")
   end
 
+  describe "#sniff?" do
+
+    it "defaults to false for testing" do
+      subject.stubs(:env).returns('test')
+      subject.sniff?.should be_false
+    end
+
+    it "defaults true when in development" do
+      subject.stubs(:env).returns('development')
+      subject.sniff?.should be_true
+    end
+
+    it "defaults true when in production" do
+      subject.stubs(:env).returns('production')
+      subject.sniff?.should be_true
+    end
+
+  end
+
+  describe "#sniff_envs allows configuration for #sniff?" do
+    let!(:sniff_envs) { subject.stubs(:sniff_envs).returns(['test']) }
+
+    it "scopes to return false" do
+      subject.stubs(:env).returns('development')
+      subject.sniff?.should be_false
+    end
+
+    it "scopes to return true" do
+      subject.stubs(:env).returns('test')
+      subject.sniff?.should be_true
+    end
+
+  end
+
 end

@@ -7,38 +7,46 @@ describe Fozzie::Sniff do
     class FooBar
 
       _monitor
-      def self.bar!
-        :bar
-      end
+      def self.bar!; :bar end
 
       _monitor
-      def self.koala(hsh = {})
-        hsh
-      end
+      def self.koala(hsh = {}); hsh end
 
-      def self.badger
-        :cares
-      end
+      def self.badger; :cares end
 
       _monitor
-      def foo
-        :foo
-      end
+      def foo; :foo end
 
       _monitor
-      def sloth(a, b, c)
-        [a,b,c]
-      end
+      def sloth(a, b, c); [a,b,c] end
 
-      def honeybadger
-        :dontcare
-      end
+      def honeybadger; :dontcare end
+
     end
 
     FooBar
   end
 
+  context "environments" do
+
+    it "is disabled in test" do
+      Fozzie.c.stubs(:env).returns('test')
+      S.expects(:time_for).with(['foo_bar', 'bar!']).never
+
+      subject.bar!
+    end
+
+    it "is enabled in development" do
+      Fozzie.c.stubs(:env).returns('development')
+      S.expects(:time_for).with(['foo_bar', 'bar!'])
+
+      subject.bar!
+    end
+
+  end
+
   context 'class methods' do
+    let!(:env) { Fozzie.c.stubs(:env).returns('development') }
 
     it "aliases methods for monitoring" do
       subject.methods.grep(/bar/).should eq [:bar!, :"bar_with_monitor!", :"bar_without_monitor!"]
@@ -49,7 +57,7 @@ describe Fozzie::Sniff do
     end
 
     it "utilises Fozzie" do
-      S.expects(:time_for).with(['FooBar', 'bar!'])
+      S.expects(:time_for).with(['foo_bar', 'bar!'])
 
       subject.bar!
     end
@@ -60,7 +68,7 @@ describe Fozzie::Sniff do
     end
 
     it "does not monitor when mapped" do
-      S.expects(:time_for).with(['FooBar', 'badger']).never
+      S.expects(:time_for).with(['foo_bar', 'badger']).never
 
       subject.badger.should eq :cares
     end
@@ -78,7 +86,7 @@ describe Fozzie::Sniff do
     end
 
     it "utilises Fozzie" do
-      S.expects(:time_for).with(['FooBar', 'foo'])
+      S.expects(:time_for).with(['foo_bar', 'foo'])
 
       subject.new.foo
     end
@@ -89,7 +97,7 @@ describe Fozzie::Sniff do
     end
 
     it "does not monitor when mapped" do
-      S.expects(:time_for).with(['FooBar', 'honeybadger']).never
+      S.expects(:time_for).with(['foo_bar', 'honeybadger']).never
 
       subject.new.honeybadger.should eq :dontcare
     end

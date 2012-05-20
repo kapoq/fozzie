@@ -10,19 +10,11 @@ module Fozzie
   class Configuration
     include Sys
 
-    attr_accessor :env, :config_path, :host, :port, :appname, :namespaces, :timeout, :monitor_classes
+    attr_accessor :env, :config_path, :host, :port, :appname, :namespaces, :timeout, :monitor_classes, :sniff_envs
 
     def initialize(args = {})
       merge_and_assign_config(args)
       self.origin_name
-    end
-
-    def add_monitor_class(klass)
-      self.monitor_classes.push(klass)
-    end
-
-    def want_to_monitor?(klass)
-      self.monitor_classes.include?(klass.name.to_sym)
     end
 
     # Returns the prefix for any stat requested to be registered
@@ -36,6 +28,10 @@ module Fozzie
     # Returns the origin name of the current machine to register the stat against
     def origin_name
       @origin_name ||= Uname.uname.nodename
+    end
+
+    def sniff?
+      self.sniff_envs.collect(&:to_sym).include?(self.env.to_sym)
     end
 
     private
@@ -59,7 +55,8 @@ module Fozzie
         :appname         => '',
         :namespaces      => %w{Stats S Statistics Warehouse},
         :timeout         => 0.5,
-        :monitor_classes => []
+        :monitor_classes => [],
+        :sniff_envs      => [:development, :staging, :production]
       }.dup
     end
 
