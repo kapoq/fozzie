@@ -180,9 +180,11 @@ If you also require UI metrics, you can also include the Mill script in the bott
 
 Currently supported and maintained by [Marc Watts](marc.watts@lonelyplanet.co.uk) @Lonely Planet Online.
 
-Big thanks to:
+Big thanks and Credits:
 
 * [Mark Barger](mark.barger@lonelyplanet.co.uk) for support in trying to make this Gem useful.
+
+* [Dave Nolan](https://github.com/textgoeshere)
 
 * [Etsy](http://codeascraft.etsy.com/) who's [Statsd](https://github.com/etsy/statsd) product has enabled us to come such a long way in a very short period of time. We love Etsy.
 
