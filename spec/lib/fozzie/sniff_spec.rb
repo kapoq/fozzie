@@ -59,7 +59,7 @@ describe Fozzie::Sniff do
     subject { klass }
     
     it "aliases methods for monitoring" do
-      subject.methods.grep(/bar/).should eq [:bar!, :"bar_with_monitor!", :"bar_without_monitor!"]
+      subject.methods.grep(/bar/).should =~ [:bar!, :"bar_with_monitor!", :"bar_without_monitor!"]
     end
 
     it "behaves like original" do
@@ -96,7 +96,7 @@ describe Fozzie::Sniff do
     subject { FooBar.new }
     
     it "aliases methods for monitoring" do
-      subject.methods.grep(/foo/).should eq [:foo, :foo_with_monitor, :foo_without_monitor]
+      subject.methods.grep(/foo/).should =~ [:foo, :foo_with_monitor, :foo_without_monitor]
     end
 
     it "behaves like original" do
