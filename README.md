@@ -1,6 +1,11 @@
-# Fozzie
+# Fozzie ![travis-ci](https://secure.travis-ci.org/lonelyplanet.com/fozzie.png)
 
-Ruby gem for registering statistics to Statsd in various ways.
+Ruby gem for registering statistics to a [Statsd](https://github.com/etsy/statsd) server in various ways.
+
+## Requirements
+
+* A Statsd server
+* Ruby 1.9
 
 ## Basic Usage
 
@@ -8,8 +13,9 @@ Send through statistics depending on the type you want to provide:
 
 ### Increment counter
 
-    Stats.increment 'wat'
-
+    Stats.increment 'wat' # increments the value in a Statsd bucket called 'some.prefix.wat' -
+                          # the exact bucket name depends on the bucket name prefix (see below)
+                           
 ### Decrement counter
 
     Stats.decrement 'wat'
@@ -142,21 +148,26 @@ To time and register the controller actions within your Rails application, Fozzi
 
 ### Rails
 
-Based on the Rack middleware above, but is more involved in it's construction of the bucket value.
+Based on the Rack middleware above, but is more involved in its construction of the bucket value.
 
 Fozzie::Rails::Middleware will automatically be invoked on Rails initialization.
 
 ## Bucket name prefixes
 
-Fozzie will construct bucket name prefixes according to your settings and environment. Example would be
+Fozzie automatically constructs bucket name prefixes from app name,
+hostname, and environment. For example:
 
-    Stats.increment 'foo'
+    Stats.increment 'wat'
 
-Would be represented as the following Graphite bucket:
+increments the bucket named
 
-    wat.your-computer-name.development.foo
+    app-name.your-computer-name.development.wat
 
-When working on your development machine. This allows multiple application instances, in different environments, to be distinguished easily, and collated in Graphite quickly.
+When working on your development machine. This allows multiple
+application instances, in different environments, to be distinguished
+easily and collated in Graphite quickly.
+
+The app name can be configured via the YAML configuration.
 
 ## Low level behaviour
 
@@ -178,7 +189,7 @@ If you also require UI metrics, you can also include the Mill script in the bott
 
 ## Credits
 
-Currently supported and maintained by [Marc Watts](marc.watts@lonelyplanet.co.uk) @Lonely Planet Online.
+Currently supported and maintained by [Marc Watts](marc.watts@lonelyplanet.co.uk) @ Lonely Planet Online.
 
 Big thanks and Credits:
 
@@ -186,7 +197,7 @@ Big thanks and Credits:
 
 * [Dave Nolan](https://github.com/textgoeshere)
 
-* [Etsy](http://codeascraft.etsy.com/) who's [Statsd](https://github.com/etsy/statsd) product has enabled us to come such a long way in a very short period of time. We love Etsy.
+* [Etsy](http://codeascraft.etsy.com/) whose [Statsd](https://github.com/etsy/statsd) product has enabled us to come such a long way in a very short period of time. We love Etsy.
 
 * [reinh](https://github.com/reinh/statsd) for his [statsd](https://github.com/reinh/statsd) Gem.
 
