@@ -22,6 +22,11 @@ describe Fozzie::Sniff do
 
       def honeybadger; :dontcare end
 
+      _monitor
+      def proxy_woxy
+        yield(:proxy) if block_given?
+      end
+
     end
 
     FooBar
@@ -100,6 +105,15 @@ describe Fozzie::Sniff do
       S.expects(:time_for).with(['foo_bar', 'honeybadger']).never
 
       subject.new.honeybadger.should eq :dontcare
+    end
+
+    it "yields block when given" do
+      S.expects(:time_for).with(['foo_bar', 'proxy_woxy'])
+
+      subject.new.proxy_woxy do |a|
+        puts :hey
+        a
+      end.should eq :proxy
     end
 
   end
