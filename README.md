@@ -1,4 +1,4 @@
-# Fozzie ![travis-ci](https://secure.travis-ci.org/lonelyplanet/fozzie.png)
+# Fozzie [![travis-ci](https://secure.travis-ci.org/lonelyplanet/fozzie.png)](https://secure.travis-ci.org/lonelyplanet/fozzie)
 
 Ruby gem for registering statistics to a [Statsd](https://github.com/etsy/statsd) server in various ways.
 
