@@ -21,24 +21,24 @@ describe Fozzie::Configuration do
   end
 
   it "defaults env" do
-    subject.env.should eq 'development'
+    subject.env.should eq 'test'
   end
 
   it "creates a data prefix" do
     subject.stubs(:origin_name).returns("")
-    subject.data_prefix.should eq 'development'
+    subject.data_prefix.should eq 'test'
   end
 
   it "creates a data prefix with appname when set" do
     subject.stubs(:origin_name).returns("")
     subject.appname = 'astoria'
-    subject.data_prefix.should eq 'astoria.development'
+    subject.data_prefix.should eq 'astoria.test'
   end
 
   it "creates a prefix with origin" do
     subject.stubs(:origin_name).returns("app.server.local")
     subject.appname = 'astoria'
-    subject.data_prefix.should eq 'astoria.app-server-local.development'
+    subject.data_prefix.should eq 'astoria.app-server-local.test'
   end
 
   it "handles missing configuration namespace" do
