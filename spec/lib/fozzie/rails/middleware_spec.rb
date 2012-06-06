@@ -71,8 +71,9 @@ describe Fozzie::Rails::Middleware do
     let(:path) { mock "path" }
     let(:request_method) { mock "request_method" }
     
-    it "gets the path_info from env parameter" do
+    it "gets the path_info and request method from env parameter" do
       env.expects(:[]).with("PATH_INFO")
+      env.expects(:[]).with("REQUEST_METHOD")
       subject.generate_key(env)
     end
 
@@ -102,9 +103,9 @@ describe Fozzie::Rails::Middleware do
                                                 :action     => "action" })
       end
       
-      it "looks up controller and action for the path" do
+      it "looks up controller and action for the path and request method" do
         subject.expects(:routing_lookup).returns(routes)
-        routes.expects(:recognize_path).with(path)
+        routes.expects(:recognize_path).with(path, :method => request_method)
         subject.generate_key(env)
       end
 
