@@ -112,12 +112,14 @@ module Fozzie
     #
     # `Stats.event 'wat', 'app'`
     def event(type, app = nil)
-      timing ["event", type.to_s, app], Time.now.usec
+      gauge ["event", type.to_s, app], Time.now.usec
     end
 
     # Register an arbitrary value
-    def gauge(stat, value)
-      send(stat, value, "g", sample_rate = 1)
+    #
+    # `Stats.gauge 'wat', 'app'`
+    def gauge(stat, value, sample_rate = 1)
+      send(stat, value, "g", sample_rate)
     end
   end
 end

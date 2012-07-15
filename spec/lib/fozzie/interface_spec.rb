@@ -43,19 +43,19 @@ describe Fozzie::Interface do
   end
 
   it "registers a commit" do
-    subject.expects(:timing).with(['event', 'commit', nil], anything).twice
+    subject.expects(:gauge).with(['event', 'commit', nil], anything).twice
     subject.commit
     subject.committed
   end
 
   it "registers a build" do
-    subject.expects(:timing).with(['event', 'build', nil], anything).twice
+    subject.expects(:gauge).with(['event', 'build', nil], anything).twice
     subject.build
     subject.built
   end
 
   it "registers a deploy" do
-    subject.expects(:timing).with(['event', 'deploy', nil], anything).twice
+    subject.expects(:gauge).with(['event', 'deploy', nil], anything).twice
     subject.deploy
     subject.deployed
   end
