@@ -10,19 +10,25 @@ module Fozzie
   class Configuration
     include Sys
 
-    attr_accessor :env, :config_path, :host, :port, :appname, :namespaces, :timeout, :monitor_classes, :sniff_envs
+    attr_accessor :env, :config_path, :host, :port, :appname, :namespaces, :timeout, :monitor_classes, :sniff_envs, :ignore_prefix
 
     def initialize(args = {})
       merge_and_assign_config(args)
       self.origin_name
     end
 
+    def disable_prefix
+      @ignore_prefix = true
+    end
+
     # Returns the prefix for any stat requested to be registered
     def data_prefix
-      s = [appname, origin_name, env].collect do |s|
+      return nil if @ignore_prefix
+
+      @data_prefix ||= [appname, origin_name, env].collect do |s|
         s.empty? ? nil : s.gsub('.', '-')
       end.compact.join('.').strip
-      (s.empty? ? nil : s)
+      (@data_prefix.empty? ? nil : @data_prefix)
     end
 
     # Returns the origin name of the current machine to register the stat against
@@ -56,7 +62,8 @@ module Fozzie
         :namespaces      => %w{Stats S Statistics Warehouse},
         :timeout         => 0.5,
         :monitor_classes => [],
-        :sniff_envs      => [:development, :staging, :production]
+        :sniff_envs      => [:development, :staging, :production],
+        :ignore_prefix   => false
       }.dup
     end
 

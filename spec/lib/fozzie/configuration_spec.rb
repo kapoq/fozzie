@@ -84,4 +84,13 @@ describe Fozzie::Configuration do
 
   end
 
+  describe "ignoring prefix" do
+
+    it "does not use prefix when set to ignore" do
+      subject.disable_prefix
+      subject.ignore_prefix.should eq(true)
+    end
+
+  end
+
 end

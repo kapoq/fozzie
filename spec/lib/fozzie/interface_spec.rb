@@ -166,4 +166,15 @@ describe Fozzie::Interface do
     end
   end
 
+  describe "without prefix" do
+
+    it "registers stats without app, etc" do
+      Fozzie.c.disable_prefix
+      subject.expects(:send_to_socket).with {|bin| bin.match(/^mystat/) }
+
+      subject.gauge("mystat", 99)
+    end
+
+  end
+
 end
