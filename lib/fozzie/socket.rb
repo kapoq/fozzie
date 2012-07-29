@@ -3,7 +3,7 @@ require 'socket'
 module Fozzie
   module Socket
 
-    RESERVED_CHARS_REGEX = /[\:\|\@]/
+    RESERVED_CHARS_REGEX = /[\:\|\@\s]/
 
     private
 
