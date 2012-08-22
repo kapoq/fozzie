@@ -11,6 +11,9 @@ module Fozzie
 
   require 'core_ext/module/monitor'
 
+  require 'fozzie/adapter'
+
+  require "fozzie/exception"
   require 'fozzie/configuration'
   require "fozzie/interface"
   require "fozzie/version"

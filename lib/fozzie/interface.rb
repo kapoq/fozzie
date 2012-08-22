@@ -1,9 +1,9 @@
 require 'singleton'
-require 'fozzie/socket'
+require 'fozzie/adapter/statsd'
 
 module Fozzie
   class Interface
-    include Fozzie::Socket, Singleton
+    include Singleton
 
     # Increments the given stat by one, with an optional sample rate
     #
@@ -121,5 +121,14 @@ module Fozzie
     def gauge(stat, value, sample_rate = 1)
       send(stat, value, "g", sample_rate)
     end
+
+    private
+
+    # Send the statistic to the chosen provider
+    #
+    def send(stat, value, unit, sample_rate = 1)
+      Fozzie.c.adapter.register(stat, value, unit, sample_rate)
+    end
+
   end
 end

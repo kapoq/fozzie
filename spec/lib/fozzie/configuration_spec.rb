@@ -24,6 +24,27 @@ describe Fozzie::Configuration do
     subject.env.should eq 'test'
   end
 
+  describe "#provider" do
+
+    it "throw error on incorrect assignment" do
+      -> { Fozzie::Configuration.new({:env => 'test', :provider => 'foo'}) }.should raise_error(Fozzie::AdapterMissing)
+    end
+
+    it "defaults provider to Statsd" do
+      subject.adapter.should be_kind_of(Fozzie::Adapter::Statsd)
+    end
+
+  end
+
+  describe "without prefix" do
+
+    it "registers stats without app, etc" do
+      subject.disable_prefix
+      subject.data_prefix.should eq nil
+    end
+
+  end
+
   describe "#prefix and #data_prefix" do
 
     it "creates a #data_prefix" do

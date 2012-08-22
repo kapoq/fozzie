@@ -7,14 +7,22 @@ module Fozzie
 
   # Fozzie configuration allows assignment of global properties
   # that will be used within the Fozzie codebase.
+
   class Configuration
     include Sys
 
-    attr_accessor :env, :config_path, :host, :port, :appname, :namespaces, :timeout, :monitor_classes, :sniff_envs, :ignore_prefix, :prefix
+    attr_accessor :env, :config_path, :host, :port, :appname, :namespaces, :timeout, :monitor_classes, :sniff_envs, :ignore_prefix, :prefix, :provider
 
     def initialize(args = {})
       merge_and_assign_config(args)
+      self.adapter
       self.origin_name
+    end
+
+    def adapter
+      @adapter ||= eval("Fozzie::Adapter::#{@provider}").new
+    rescue NoMethodError
+      raise AdapterMissing, "Adapter could not be found for given provider #{@provider}"
     end
 
     def disable_prefix
@@ -31,8 +39,8 @@ module Fozzie
       end
 
       data_prefix = data_prefix.collect do |s|
-        s.empty? ? nil : s.gsub(Socket::DELIMETER, '-')
-      end.compact.join(Socket::DELIMETER).strip
+        s.empty? ? nil : s.gsub(adapter.class::DELIMETER, '-')
+      end.compact.join(adapter.class::DELIMETER).strip
 
       @data_prefix ||= (data_prefix.empty? ? nil : data_prefix)
     end
@@ -70,7 +78,8 @@ module Fozzie
         :timeout         => 0.5,
         :monitor_classes => [],
         :sniff_envs      => [:development, :staging, :production],
-        :ignore_prefix   => false
+        :ignore_prefix   => false,
+        :provider        => :Statsd
       }.dup
     end
 
