@@ -12,101 +12,106 @@ Ruby gem for registering statistics to a [Statsd](https://github.com/etsy/statsd
 Send through statistics depending on the type you want to provide:
 
 ### Increment counter
-
-    Stats.increment 'wat' # increments the value in a Statsd bucket called 'some.prefix.wat' -
-                          # the exact bucket name depends on the bucket name prefix (see below)
-                           
+``` ruby
+  Stats.increment 'wat' # increments the value in a Statsd bucket called 'some.prefix.wat' -
+                        # the exact bucket name depends on the bucket name prefix (see below)
+```
 ### Decrement counter
-
-    Stats.decrement 'wat'
-
+``` ruby
+  Stats.decrement 'wat'
+```
 ### Decrement counter - provide a value as integer
-
-    Stats.count 'wat', 5
-
+``` ruby
+  Stats.count 'wat', 5
+```
 ### Basic timing - provide a value in milliseconds
-
+``` ruby
     Stats.timing 'wat', 500
-
+```
 ### Timings - provide a block to time against (inline and do syntax supported)
+``` ruby
+  Stats.time 'wat' { sleep 5 }
 
-    Stats.time 'wat' { sleep 5 }
+  Stats.time_to_do 'wat' do
+    sleep 5
+  end
 
-    Stats.time_to_do 'wat' do
-      sleep 5
-    end
-
-    Stats.time_for 'wat' { sleep 5 }
-
+  Stats.time_for 'wat' { sleep 5 }
+```
 ### Gauges - register arbitrary values
-
-    Stats.gauge 'wat', 99
-
+``` ruby
+  Stats.gauge 'wat', 99
+```
 ### Events - register different events
 
 
 #### Commits
+``` ruby
+  Stats.commit
 
-    Stats.commit
-
-    Stats.committed
-
+  Stats.committed
+```
 #### Builds
+``` ruby
+  Stats.built
 
-    Stats.built
-
-    Stats.build
-
+  Stats.build
+```
 #### Deployments
-
-    Stats.deployed
-
-  With a custom app:
-
-    Stats.deployed 'watapp'
-
-    Stats.deploy
+``` ruby
+  Stats.deployed
+```
 
   With a custom app:
+``` ruby
+  Stats.deployed 'watapp'
 
-    Stats.deploy 'watapp'
+  Stats.deploy
+```
+
+  With a custom app:
+``` ruby
+  Stats.deploy 'watapp'
+```
 
 #### Custom
+``` ruby
+  Stats.event 'pull'
+```
+With a custom app:
 
-    Stats.event 'pull'
-
-  With a custom app:
-
-    Stats.event 'pull', 'watapp'
-
+``` ruby
+  Stats.event 'pull', 'watapp'
+```
 ### Boolean result - pass a value to be true or false, and increment on true
-
-    Stats.increment_on 'wat', duck.valid?
-
+``` ruby
+  Stats.increment_on 'wat', duck.valid?
+```
 ## Sampling
 
 Each of the above methods accepts a sample rate as the last argument (before any applicable blocks), e.g:
 
-    Stats.increment 'wat', 10
+``` ruby
+  Stats.increment 'wat', 10
 
-    Stats.decrement 'wat', 10
+  Stats.decrement 'wat', 10
 
-    Stats.count 'wat', 5, 10
-    
+  Stats.count 'wat', 5, 10
+```
 ## Monitor
 
 You can monitor methods with the following:
+``` ruby
+  class FooBar
 
-    class FooBar
-    
-      _monitor
-      def zar
-        # my code here...
-      end
-    
+    _monitor
+    def zar
+      # my code here...
     end
 
-This will register the processing time for this method, everytime it is called, under the Graphite bucket `foo_bar.zar`. 
+  end
+```
+This will register the processing time for this method, everytime it is called, under the Graphite bucket `foo_bar.zar`.
 
 This will work on both Class and Instance methods.
 
@@ -114,10 +119,12 @@ This will work on both Class and Instance methods.
 
 Fozzie supports the following namespaces as default
 
-    Stats.increment 'wat'
-    S.increment 'wat'
-    Statistics.increment 'wat'
-    Warehouse.increment 'wat'
+``` ruby
+  Stats.increment 'wat'
+  S.increment 'wat'
+  Statistics.increment 'wat'
+  Warehouse.increment 'wat'
+```
 
 You can customise this via the YAML configuration (see instructions below)
 
@@ -129,29 +136,52 @@ Fozzie is configured via a YAML or by setting a block against the Fozzie namespa
 
 Create a `fozzie.yml` within a `config` folder on the root of your app, which contains your settings for each env. Simple, verbose example below.
 
-    development:
-      appname: wat
-      host: '127.0.0.1'
-      port: 8125
-      namespaces: %w{Foo Bar Wat}
-    test:
-      appname: wat
-      host: 'localhost'
-      port: 8125
-      namespaces: %w{Foo Bar Wat}
-    production:
-      appname: wat
-      host: 'stats.wat.com'
-      port: 8125
-      namespaces: %w{Foo Bar Wat}
+``` yaml
+  development:
+    appname: wat
+    host: '127.0.0.1'
+    port: 8125
+    namespaces: %w{Foo Bar Wat}
+    prefix: %{foo bar car}
+  test:
+    appname: wat
+    host: 'localhost'
+    port: 8125
+    namespaces: %w{Foo Bar Wat}
+  production:
+    appname: wat
+    host: 'stats.wat.com'
+    port: 8125
+    namespaces: %w{Foo Bar Wat}
+```
 
 ### Configure block
 
-    Fozzie.configure do |config|
-      config.appname = "wat"
-      config.host    = "127.0.0.1"
-      config.port    = 8125
-    end
+``` ruby
+  Fozzie.configure do |config|
+    config.appname = "wat"
+    config.host    = "127.0.0.1"
+    config.port    = 8125
+    config.prefix  = []
+  end
+```
+### Prefixes
+
+You can inject or set the prefix value for your application.
+
+``` ruby
+  Fozzie.configure do |config|
+    config.prefix = ['foo', 'wat', 'bar']
+  end
+```
+
+``` ruby
+  Fozzie.configure do |config|
+    config.prefix << 'dynamic-value'
+  end
+```
+
+** Prefixes are cached on first use, therefore any changes to the Fozzie configure prefix after first metric is sent in your application will be ignored.
 
 ## Middleware
 
@@ -159,13 +189,15 @@ To time and register the controller actions within your Rails application, Fozzi
 
 ### Rack
 
-    require 'rack'
-    require 'fozzie'
+``` ruby
+  require 'rack'
+  require 'fozzie'
 
-    app = Rack::Builder.new {
-      use Fozzie::Rack::Middleware
-      lambda { |env| [200, {'Content-Type' => 'text/plain'}, 'OK'] }
-    }
+  app = Rack::Builder.new {
+    use Fozzie::Rack::Middleware
+    lambda { |env| [200, {'Content-Type' => 'text/plain'}, 'OK'] }
+  }
+```
 
 ### Rails
 
@@ -178,8 +210,9 @@ Fozzie::Rails::Middleware will automatically be invoked on Rails initialization.
 Fozzie automatically constructs bucket name prefixes from app name,
 hostname, and environment. For example:
 
-    Stats.increment 'wat'
-
+``` ruby
+  Stats.increment 'wat'
+```
 increments the bucket named
 
     app-name.your-computer-name.development.wat
@@ -195,12 +228,14 @@ The app name can be configured via the YAML configuration.
 The current implementation of Fozzie wraps the sending of the statistic in a timeout and rescue block, which prevent long host lookups (i.e. if your stats server disappears) and minimises impact on your code or application if something is erroring at a low level.
 
 Fozzie will try to log these errors, but only if a logger has been applied (which by default it does not). Examples:
-  
-    require 'logger'
-    Fozzie.logger = Logger.new(STDOUT)
 
-    require 'logger'
-    Fozzie.logger = Logger.new 'log/fozzie.log'
+``` ruby
+  require 'logger'
+  Fozzie.logger = Logger.new(STDOUT)
+
+  require 'logger'
+  Fozzie.logger = Logger.new 'log/fozzie.log'
+```
 
 This may change, depending on feedback and more production experience.
 

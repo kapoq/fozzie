@@ -4,6 +4,7 @@ module Fozzie
   module Socket
 
     RESERVED_CHARS_REGEX = /[\:\|\@\s]/
+    DELIMETER = '.'
 
     private
 
@@ -12,10 +13,10 @@ module Fozzie
     # Creates the Statsd key from the given values, and sends to socket (depending on sample rate)
     #
     def send(stat, delta, type, sample_rate)
-      stat = [stat].flatten.compact.collect(&:to_s).join('.').downcase
-      stat = stat.gsub('::', '.').gsub(RESERVED_CHARS_REGEX, '_')
+      stat = [stat].flatten.compact.collect(&:to_s).join(DELIMETER).downcase
+      stat = stat.gsub('::', DELIMETER).gsub(RESERVED_CHARS_REGEX, '_')
 
-      k =  [Fozzie.c.data_prefix, stat].compact.join('.')
+      k =  [Fozzie.c.data_prefix, stat].compact.join(DELIMETER)
       k << ":"
       k << [delta, type].join('|')
       k << '@%s' % sample_rate.to_s if sample_rate < 1

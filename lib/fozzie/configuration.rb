@@ -10,7 +10,7 @@ module Fozzie
   class Configuration
     include Sys
 
-    attr_accessor :env, :config_path, :host, :port, :appname, :namespaces, :timeout, :monitor_classes, :sniff_envs, :ignore_prefix
+    attr_accessor :env, :config_path, :host, :port, :appname, :namespaces, :timeout, :monitor_classes, :sniff_envs, :ignore_prefix, :prefix
 
     def initialize(args = {})
       merge_and_assign_config(args)
@@ -24,11 +24,17 @@ module Fozzie
     # Returns the prefix for any stat requested to be registered
     def data_prefix
       return nil if @ignore_prefix
+      return @data_prefix if @data_prefix
 
-      @data_prefix ||= [appname, origin_name, env].collect do |s|
-        s.empty? ? nil : s.gsub('.', '-')
-      end.compact.join('.').strip
-      (@data_prefix.empty? ? nil : @data_prefix)
+      data_prefix = @prefix.collect do |me|
+        (me.kind_of?(Symbol) && self.respond_to?(me.to_sym) ? self.send(me) : me.to_s)
+      end
+
+      data_prefix = data_prefix.collect do |s|
+        s.empty? ? nil : s.gsub(Socket::DELIMETER, '-')
+      end.compact.join(Socket::DELIMETER).strip
+
+      @data_prefix ||= (data_prefix.empty? ? nil : data_prefix)
     end
 
     # Returns the origin name of the current machine to register the stat against
@@ -55,6 +61,7 @@ module Fozzie
     def self.default_configuration
       {
         :host            => '127.0.0.1',
+        :prefix          => [:appname, :origin_name, :env],
         :port            => 8125,
         :config_path     => '',
         :env             => (ENV['RACK_ENV'] || ENV['RAILS_ENV'] || 'development'),

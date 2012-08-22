@@ -24,20 +24,35 @@ describe Fozzie::Configuration do
     subject.env.should eq 'test'
   end
 
-  it "creates a data prefix" do
-    subject.stubs(:origin_name).returns("")
-    subject.data_prefix.should eq 'test'
-  end
+  describe "#prefix and #data_prefix" do
 
-  it "creates a data prefix with appname when set" do
-    subject.stubs(:origin_name).returns("")
-    subject.appname = 'astoria'
-    subject.data_prefix.should eq 'astoria.test'
-  end
+    it "creates a #data_prefix" do
+      subject.stubs(:origin_name).returns("")
+      subject.data_prefix.should eq 'test'
+    end
 
-  it "creates a prefix with origin" do
-    subject.appname = 'astoria'
-    subject.data_prefix.should match /^astoria\.(\S+)\.test$/
+    it "creates a #data_prefix with appname when set" do
+      subject.stubs(:origin_name).returns("")
+      subject.appname = 'astoria'
+      subject.data_prefix.should eq 'astoria.test'
+    end
+
+    it "creates a #data_prefix with origin" do
+      subject.appname = 'astoria'
+      subject.data_prefix.should match /^astoria\.(\S+)\.test$/
+    end
+
+    it "allows dynamic assignment of #prefix to derive #data_prefix" do
+      subject.prefix = [:foo, :bar, :car]
+      subject.data_prefix.should eq 'foo.bar.car'
+    end
+
+    it "allows dynamic injection of value to prefix" do
+      subject.stubs(:origin_name).returns("")
+      subject.prefix << 'git-sha-1234'
+      subject.data_prefix.should eq 'test.git-sha-1234'
+    end
+
   end
 
   it "handles missing configuration namespace" do
