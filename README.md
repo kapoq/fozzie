@@ -181,7 +181,7 @@ Fozzie.configure do |config|
 end
 ```
 
-** Prefixes are cached on first use, therefore any changes to the Fozzie configure prefix after first metric is sent in your application will be ignored.
+Prefixes are cached on first use, therefore any changes to the Fozzie configure prefix after first metric is sent in your application will be ignored.
 
 ## Middleware
 
@@ -233,7 +233,9 @@ Fozzie will try to log these errors, but only if a logger has been applied (whic
 ``` ruby
 require 'logger'
 Fozzie.logger = Logger.new(STDOUT)
+```
 
+``` ruby
 require 'logger'
 Fozzie.logger = Logger.new 'log/fozzie.log'
 ```
