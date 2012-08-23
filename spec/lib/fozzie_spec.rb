@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'logger'
 
 describe Fozzie do
 
@@ -7,6 +8,12 @@ describe Fozzie do
       Fozzie.configure {|c| c.send("#{field}=", val) }
       Fozzie.c.send(field).should == val
     end
+  end
+
+  it "allows assignment of logger" do
+    logger = Logger.new STDOUT
+    Fozzie.logger = logger
+    Fozzie.logger.should be logger
   end
 
   it "has configuration" do
