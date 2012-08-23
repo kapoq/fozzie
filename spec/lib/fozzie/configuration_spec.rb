@@ -13,7 +13,7 @@ describe Fozzie::Configuration do
 
   it "attempts to load configuration from yaml" do
     c = Fozzie::Configuration.new({:env => 'test', :config_path => 'spec/'})
-    c.stubs(:origin_name).returns ""
+    c.stub(:origin_name => "")
     c.host.should eq '1.1.1.1'
     c.port.should eq 9876
     c.appname.should eq 'fozzie'
@@ -25,7 +25,6 @@ describe Fozzie::Configuration do
   end
 
   describe "#provider" do
-
     it "throw error on incorrect assignment" do
       -> { Fozzie::Configuration.new({:env => 'test', :provider => 'foo'}) }.should raise_error(Fozzie::AdapterMissing)
     end
@@ -33,27 +32,23 @@ describe Fozzie::Configuration do
     it "defaults provider to Statsd" do
       subject.adapter.should be_kind_of(Fozzie::Adapter::Statsd)
     end
-
   end
 
   describe "without prefix" do
-
     it "registers stats without app, etc" do
       subject.disable_prefix
       subject.data_prefix.should eq nil
     end
-
   end
 
   describe "#prefix and #data_prefix" do
-
     it "creates a #data_prefix" do
-      subject.stubs(:origin_name).returns("")
+      subject.stub(:origin_name => "")
       subject.data_prefix.should eq 'test'
     end
 
     it "creates a #data_prefix with appname when set" do
-      subject.stubs(:origin_name).returns("")
+      subject.stub(:origin_name => "")
       subject.appname = 'astoria'
       subject.data_prefix.should eq 'astoria.test'
     end
@@ -69,11 +64,10 @@ describe Fozzie::Configuration do
     end
 
     it "allows dynamic injection of value to prefix" do
-      subject.stubs(:origin_name).returns("")
+      subject.stub(:origin_name => "")
       subject.prefix << 'git-sha-1234'
       subject.data_prefix.should eq 'test.git-sha-1234'
     end
-
   end
 
   it "handles missing configuration namespace" do
@@ -87,46 +81,42 @@ describe Fozzie::Configuration do
   end
 
   describe "#sniff?" do
-
     it "defaults to false for testing" do
-      subject.stubs(:env).returns('test')
+      subject.stub(:env => "test")
       subject.sniff?.should be_false
     end
 
     it "defaults true when in development" do
-      subject.stubs(:env).returns('development')
+      subject.stub(:env => "development")
       subject.sniff?.should be_true
     end
 
     it "defaults true when in production" do
-      subject.stubs(:env).returns('production')
+      subject.stub(:env => "production")
       subject.sniff?.should be_true
     end
-
   end
 
   describe "#sniff_envs allows configuration for #sniff?" do
-    let!(:sniff_envs) { subject.stubs(:sniff_envs).returns(['test']) }
+    let!(:sniff_envs) { subject.stub(:sniff_envs => ['test']) }
 
     it "scopes to return false" do
-      subject.stubs(:env).returns('development')
+      subject.stub(:env => "development")
       subject.sniff?.should be_false
     end
 
     it "scopes to return true" do
-      subject.stubs(:env).returns('test')
+      subject.stub(:env => "test")
       subject.sniff?.should be_true
     end
 
   end
 
   describe "ignoring prefix" do
-
     it "does not use prefix when set to ignore" do
       subject.disable_prefix
       subject.ignore_prefix.should eq(true)
     end
-
   end
 
 end

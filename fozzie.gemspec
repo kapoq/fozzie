@@ -5,12 +5,12 @@ require "fozzie/version"
 Gem::Specification.new do |s|
   s.name        = "fozzie"
   s.version     = Fozzie::VERSION
-  s.authors     = ["Marc Watts", "Dave Nolan"]
+  s.authors     = ["Marc Watts"]
   s.email       = ["marc.watts@lonelyplanet.co.uk"]
-  s.summary     = %q{Statsd Ruby gem from Lonely Planet Online}
+  s.summary     = %q{Ruby gem from Lonely Planet Online to register statistics. Currently supports Statsd.}
   s.description = %q{
-    Gem to make statistics sending to Statsd from Ruby applications simple and efficient as possible.
-    Inspired by the original ruby-statsd gem by Etsy, currently used by Lonely Planet Online.
+    Gem to make statistics sending from Ruby applications simple and efficient as possible.
+    Currently supports Statsd, and is inspired by the original ruby-statsd gem by Etsy.
   }
 
   s.rubyforge_project = "fozzie"
@@ -25,15 +25,9 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency 'rake'
   s.add_development_dependency 'rspec'
-  s.add_development_dependency 'mocha'
-  s.add_development_dependency 'syntax'
-  s.add_development_dependency 'simplecov'
-
+  s.add_development_dependency 'guard'
+  s.add_development_dependency 'guard-rspec'
   s.add_development_dependency 'sinatra'
   s.add_development_dependency 'rack-test'
   s.add_development_dependency 'actionpack', '2.3.14'
-
-  s.add_development_dependency 'guard'
-  s.add_development_dependency 'guard-rspec'
-
 end

@@ -14,39 +14,44 @@ describe Fozzie::Rails::Middleware do
   before do
     Rails = rails unless defined?(Rails)
   end
-  
+
   describe "#rails_version" do
     let(:version) { "10.9.8" }
     let(:rails)   { mock "rails" }
 
     before do
-      ::Rails.stubs(:version).returns(version)
+      ::Rails.stub(:version => version)
     end
-    
+
     it "returns the major version from Rails.version" do
       subject.rails_version.should == 10
     end
   end
-  
+
   describe "#routing_lookup" do
     context "when #rails_version == 3" do
       let(:app) { mock "app" }
-      
+
       before do
-        subject.stubs(:rails_version).returns(3)
+        subject.stub(:rails_version => 3)
       end
 
       it "returns Rails.application.routes" do
-        Rails.expects(:application).returns(app)
-        app.expects(:routes).returns(routes)
+        Rails.should_receive(:application).and_return(app)
+        app.should_receive(:routes).and_return(routes)
+
         subject.routing_lookup.should eq routes
       end
     end
-    
+
     context "when #rails_version does not == 3" do
+
+      before do
+        subject.stub(:rails_version => 2)
+      end
+
       before do
         if defined?(ActionController::Routing::Routes)
-          
           @old_routes_const = ActionController::Routing::Routes
           ActionController::Routing.send(:remove_const, :Routes)
         end
@@ -70,23 +75,23 @@ describe Fozzie::Rails::Middleware do
     let(:env)  { mock "env" }
     let(:path) { mock "path" }
     let(:request_method) { mock "request_method" }
-    
+
     it "gets the path_info and request method from env parameter" do
-      env.expects(:[]).with("PATH_INFO")
-      env.expects(:[]).with("REQUEST_METHOD")
+      env.should_receive(:[]).with("PATH_INFO")
+      env.should_receive(:[]).with("REQUEST_METHOD")
       subject.generate_key(env)
     end
 
     context "when path_info is nil" do
       let(:env) { { "PATH_INFO" => nil } }
-          
+
       it "does not lookup routing" do
-        subject.expects(:routing_lookup).never
+        subject.should_receive(:routing_lookup).never
         subject.generate_key(env)
       end
 
       it "does not register any stats" do
-        S.expects(:increment).never
+        S.should_receive(:increment).never
       end
 
       it "returns nil" do
@@ -96,16 +101,16 @@ describe Fozzie::Rails::Middleware do
 
     context "when path info is not nil" do
       let(:env) { { "PATH_INFO" => path, "REQUEST_METHOD" => request_method } }
-      
+
       before do
-        subject.stubs(:routing_lookup).returns(routes)
-        routes.stubs(:recognize_path).returns({ :controller => "controller",
-                                                :action     => "action" })
+        subject.stub(:routing_lookup => routes)
+        routes.stub(:recognize_path => {:controller => "controller",:action => "action" })
       end
-      
+
       it "looks up controller and action for the path and request method" do
-        subject.expects(:routing_lookup).returns(routes)
-        routes.expects(:recognize_path).with(path, :method => request_method)
+        subject.should_receive(:routing_lookup).and_return(routes)
+        routes.should_receive(:recognize_path).with(path, :method => request_method)
+
         subject.generate_key(env)
       end
 
@@ -115,7 +120,7 @@ describe Fozzie::Rails::Middleware do
     end
   end
 
-  
+
   describe "subject" do
     it "returns env on call for testing" do
       subject.call({}).should == {}

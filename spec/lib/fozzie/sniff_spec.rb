@@ -30,25 +30,25 @@ describe Fozzie::Sniff do
       def self.class_method_yielding_to_block
         yield(:retval_from_block) if block_given?
       end
-
-      self
     end
+
+    FooBar
   end
 
 
   context "environments" do
     subject { klass }
-    
+
     it "is disabled in test" do
-      Fozzie.c.stubs(:env).returns('test')
-      S.expects(:time_for).with(['foo_bar', 'bar!']).never
+      Fozzie.c.stub(:env => 'test')
+      S.should_receive(:time_for).with(['foo_bar', 'bar!']).never
 
       subject.bar!
     end
 
     it "is enabled in development" do
-      Fozzie.c.stubs(:env).returns('development')
-      S.expects(:time_for).with(['foo_bar', 'bar!'])
+      Fozzie.c.stub(:env => 'development')
+      S.should_receive(:time_for).with(['foo_bar', 'bar!'])
 
       subject.bar!
     end
@@ -57,7 +57,7 @@ describe Fozzie::Sniff do
 
   context 'class methods' do
     subject { klass }
-    
+
     it "aliases methods for monitoring" do
       subject.methods.grep(/bar/).should =~ [:bar!, :"bar_with_monitor!", :"bar_without_monitor!"]
     end
@@ -67,7 +67,7 @@ describe Fozzie::Sniff do
     end
 
     it "utilises Fozzie" do
-      S.expects(:time_for).with(['foo_bar', 'bar!'])
+      S.should_receive(:time_for).with(['foo_bar', 'bar!'])
 
       subject.bar!
     end
@@ -78,23 +78,21 @@ describe Fozzie::Sniff do
     end
 
     it "does not monitor when mapped" do
-      S.expects(:time_for).with(['foo_bar', 'badger']).never
+      S.should_receive(:time_for).with(['foo_bar', 'badger']).never
 
       subject.badger.should eq :cares
     end
 
-    
+
     it "yields to a block when given" do
-      subject.class_method_yielding_to_block do |value_from_block|
-        value_from_block
-      end.should eq :retval_from_block
+      subject.class_method_yielding_to_block {|val| val }.should eq :retval_from_block
     end
 
   end
 
   context 'instance methods' do
     subject { FooBar.new }
-    
+
     it "aliases methods for monitoring" do
       subject.methods.grep(/foo/).should =~ [:foo, :foo_with_monitor, :foo_without_monitor]
     end
@@ -104,7 +102,7 @@ describe Fozzie::Sniff do
     end
 
     it "utilises Fozzie" do
-      S.expects(:time_for).with(['foo_bar', 'foo'])
+      S.should_receive(:time_for).with(['foo_bar', 'foo'])
 
       subject.foo
     end
@@ -115,15 +113,13 @@ describe Fozzie::Sniff do
     end
 
     it "does not monitor when mapped" do
-      S.expects(:time_for).with(['foo_bar', 'honeybadger']).never
+      S.should_receive(:time_for).with(['foo_bar', 'honeybadger']).never
 
       subject.honeybadger.should eq :dontcare
     end
 
     it "yields to a block when given" do
-      subject.method_yielding_to_block do |value_from_block|
-        value_from_block
-      end.should eq :retval_from_block
+      subject.method_yielding_to_block {|val| val }.should eq :retval_from_block
     end
 
   end

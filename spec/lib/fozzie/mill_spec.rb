@@ -21,14 +21,14 @@ module Fozzie
       end
 
       it "skips if not passed" do
-        S.expects(:timing).never
+        S.should_receive(:timing).never
         subject.register("")
       end
 
       describe "registers all mapped metrics" do
         let!(:expects) {
-          S.expects(:timing).with(["page", "ttfb"], 504)
-          S.expects(:timing).with(["page", "load"], 778)
+          S.should_receive(:timing).with(["page", "ttfb"], 504)
+          S.should_receive(:timing).with(["page", "load"], 778)
         }
 
         it "dom complete" do

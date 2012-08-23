@@ -24,26 +24,26 @@ describe Fozzie::Rack::Middleware do
 
     it "ignored stats request when path not valid" do
       fake_env = { 'PATH_INFO' => '' }
-      subject.expects(:call_without_timer).with(fake_env)
+      subject.should_receive(:call_without_timer).with(fake_env)
       subject.call(fake_env)
     end
 
     it "passes request with timer on index" do
       fake_env = { 'PATH_INFO' => '/' }
-      subject.expects(:call_with_timer).with('index.render', fake_env)
+      subject.should_receive(:call_with_timer).with('index.render', fake_env)
       subject.call(fake_env)
     end
 
     it "passes request with timer on full path" do
       fake_env = { 'PATH_INFO' => '/somewhere/nice' }
-      subject.expects(:call_with_timer).with('somewhere.nice.render', fake_env)
+      subject.should_receive(:call_with_timer).with('somewhere.nice.render', fake_env)
       subject.call(fake_env)
     end
 
     it "passes request onto app" do
       envs = ['', '/', '/somewhere/nice'].each do |p|
         fake_env = { 'PATH_INFO' => p }
-        subject.app.expects(:call).with(fake_env)
+        subject.app.should_receive(:call).with(fake_env)
         subject.call(fake_env)
       end
     end
@@ -84,14 +84,15 @@ describe "Sinatra Server with Middleware" do
   end
 
   it "sends stats request on root" do
-    S.expects(:timing).with('index.render', any_parameters)
+    S.should_receive(:timing).with('index.render', anything, anything)
     get '/'
     last_response.should be_ok
     last_response.body.should == 'echo'
   end
 
   it "sends stats request on nested path" do
-    S.expects(:timing).with('somewhere.nice.render', any_parameters)
+    S.should_receive(:timing).with('somewhere.nice.render', anything, anything)
+
     get '/somewhere/nice'
     last_response.should be_ok
     last_response.body.should == 'echo'
