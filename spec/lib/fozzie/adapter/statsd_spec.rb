@@ -4,43 +4,56 @@ require 'fozzie/adapter/statsd'
 module Fozzie::Adapter
   describe Statsd do
 
-    it { should respond_to(:register) }
+    it_behaves_like "fozzie adapter"
 
     it "downcases any stat value" do
-      subject.expects(:send_to_socket)
-        .with {|bin| bin.match /\.foo/ }
+      subject.should_receive(:send_to_socket).with {|bin| bin.match /\.foo/ }
 
       subject.register("FOO", 1, 'g', 1)
     end
 
-    it "replaces invalid stat value chars" do
-      subject.expects(:send_to_socket)
-        .with {|bin| bin.match /\.foo_/ }
-        .times(4)
+    describe "#format_bucket" do
+      it "accepts arrays" do
+        subject.format_bucket([:foo, '2']).should match /foo.2$/
+        subject.format_bucket([:foo, '2']).should match /foo.2$/
+        subject.format_bucket(%w{foo bar}).should match /foo.bar$/
+      end
 
-      subject.register("FOO:", 1, 'g', 1)
-      subject.register("FOO@", 1, 'g', 1)
-      subject.register("FOO|", 1, 'g', 1)
-      subject.register(["FOO|"], 1, 'g', 1)
+      it "converts any values to strings for stat value, ignoring nil" do
+        subject.socket.should_receive(:send).with {|bin| bin.match /\.foo.1._.bar/ }
+
+        subject.register([:foo, 1, nil, "@", "BAR"], 1, 'g', 1)
+      end
+
+      it "replaces invalid chracters" do
+        subject.format_bucket([:foo, ':']).should match /foo.#{subject.class::RESERVED_CHARS_REPLACEMENT}$/
+        subject.format_bucket([:foo, '@']).should match /foo.#{subject.class::RESERVED_CHARS_REPLACEMENT}$/
+        subject.format_bucket('foo.bar.|').should match /foo.bar.#{subject.class::RESERVED_CHARS_REPLACEMENT}$/
+      end
     end
 
-    it "converts any values to strings for stat value, ignoring nil" do
-      subject.socket.expects(:send)
-        .with {|bin| bin.match /\.foo.1._.bar/ }
+    describe "#format_value" do
+      it "defaults type to gauge when type is not mapped" do
+        subject.format_value(1, :foo, 1).should eq '1|g'
+      end
 
-      subject.register([:foo, 1, nil, "@", "BAR"], 1, 'g', 1)
+      it "converts basic values to string" do
+        subject.format_value(1, :count, 1).should eq '1|c'
+      end
     end
 
     it "ensures block is called on socket error" do
-      subject.socket.stubs(:send).raises(SocketError)
+      subject.socket.stub(:send) { raise SocketError }
+
       proc { subject.register('data.bin', 1, 'g', 1) { sleep 0.01 } }.should_not raise_error
       proc { subject.register('data.bin', 1, 'g', 1) { sleep 0.01 } }.should_not raise_error
     end
 
     it "raises Timeout on slow lookup" do
       Fozzie.c.timeout = 0.01
-      subject.socket.stubs(:send).with(any_parameters) { sleep 0.4 }
-      subject.register('data.bin', 1, 'g', 1).should eq false
+      subject.socket.stub(:send).with(any_args) { sleep 0.4 }
+
+      subject.register('data.bin', 1, :gauge, 1).should eq false
     end
 
   end

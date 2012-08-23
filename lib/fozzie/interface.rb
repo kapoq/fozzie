@@ -23,14 +23,14 @@ module Fozzie
     #
     # `Stats.count 'wat', 500`
     def count(stat, count, sample_rate=1)
-      send(stat, count, 'c', sample_rate)
+      send(stat, count, :count, sample_rate)
     end
 
     # Registers a timing (in ms) for the given stat, with an optional sample rate
     #
     # `Stats.timing 'wat', 500`
     def timing(stat, ms, sample_rate=1)
-      send(stat, ms, 'ms', sample_rate)
+      send(stat, ms, :timing, sample_rate)
     end
 
     # Registers the time taken to complete a given block (in ms), with an optional sample rate
@@ -47,7 +47,7 @@ module Fozzie
     #
     # `Stats.time_to_do 'wat' { # Do something, again... }`
     def time_to_do(stat, sample_rate=1, &block)
-      time_for(stat, sample_rate, &block)
+      time(stat, sample_rate, &block)
     end
 
     # Registers the time taken to complete a given block (in ms), with an optional sample rate
@@ -99,6 +99,13 @@ module Fozzie
       deployed(app)
     end
 
+    # Register an event of any type
+    #
+    # `Stats.event 'wat', 'app'`
+    def event(type, app = nil)
+      gauge ["event", type.to_s, app], Time.now.usec
+    end
+
     # Registers an increment on the result of the given boolean
     #
     # `Stats.increment_on 'wat', wat.random?`
@@ -108,18 +115,11 @@ module Fozzie
       perf
     end
 
-    # Register an event of any type
-    #
-    # `Stats.event 'wat', 'app'`
-    def event(type, app = nil)
-      gauge ["event", type.to_s, app], Time.now.usec
-    end
-
     # Register an arbitrary value
     #
     # `Stats.gauge 'wat', 'app'`
     def gauge(stat, value, sample_rate = 1)
-      send(stat, value, "g", sample_rate)
+      send(stat, value, :gauge, sample_rate)
     end
 
     private
