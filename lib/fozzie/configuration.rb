@@ -1,5 +1,5 @@
 require 'yaml'
-require 'core_ext/hash'
+require 'facets/hash/symbolize_keys'
 require 'sys/uname'
 require 'timeout'
 
@@ -11,7 +11,8 @@ module Fozzie
   class Configuration
     include Sys
 
-    attr_accessor :env, :config_path, :host, :port, :appname, :namespaces, :timeout, :monitor_classes, :sniff_envs, :ignore_prefix, :prefix, :provider
+    attr_accessor :env, :config_path, :host, :port, :appname, :namespaces,
+      :timeout, :monitor_classes, :sniff_envs, :ignore_prefix, :prefix, :provider
 
     def initialize(args = {})
       merge_and_assign_config(args)
