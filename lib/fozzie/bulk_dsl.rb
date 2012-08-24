@@ -10,7 +10,7 @@ module Fozzie
 
     private
 
-    # Send the statistic to the chosen provider
+    # Cache the requested metrics for bulk sending
     #
     def send(stat, value, type, sample_rate = 1)
      val = { :bin => stat, :value => value, :type => type, :sample_rate => sample_rate }
