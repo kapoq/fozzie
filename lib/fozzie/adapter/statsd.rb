@@ -14,10 +14,6 @@ module Fozzie
       # Send the statistic to the server
       #
       # Creates the Statsd key from the given values, and sends to socket (depending on sample rate)
-      # :bin => :foo 
-      # :value => 1
-      # :type => :gauge
-      # :sample_rate => 1
       def register(*stats)
         metrics = stats.flatten.collect do |stat|
           next if sampled?(stat[:sample_rate])

@@ -115,6 +115,20 @@ This will register the processing time for this method, everytime it is called, 
 
 This will work on both Class and Instance methods.
 
+## Bulk
+
+You can send a bulk of metrics using the `bulk` method:
+``` ruby
+Stats.bulk do
+  increment 'wat'
+  decrement 'wot'
+  gauge 'foo', rand
+  time_to_do 'wat_timer' { sleep 4 }
+end
+```
+
+This will send all the given metrics in a single packet to the statistics server.
+
 ## Namespaces
 
 Fozzie supports the following namespaces as default
