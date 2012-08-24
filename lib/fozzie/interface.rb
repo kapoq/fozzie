@@ -1,9 +1,7 @@
-require 'singleton'
 require 'fozzie/adapter/statsd'
 
 module Fozzie
-  class Interface
-    include Singleton
+  module Interface
 
     # Increments the given stat by one, with an optional sample rate
     #
@@ -122,12 +120,20 @@ module Fozzie
       send(stat, value, :gauge, sample_rate)
     end
 
+    # Register multiple statistics in a single call
+    #
+    # `Stats.bulk do
+    #    increment 'wat'
+    #    decrement 'wot'
+    # end`
+    def bulk(&block)
+      Fozzie::BulkDsl.new(&block)
+    end
+
     private
 
-    # Send the statistic to the chosen provider
-    #
-    def send(stat, value, unit, sample_rate = 1)
-      Fozzie.c.adapter.register(stat, value, unit, sample_rate)
+    def adapter
+      Fozzie.c.adapter
     end
 
   end

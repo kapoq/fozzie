@@ -9,7 +9,7 @@ module Fozzie::Adapter
     it "downcases any stat value" do
       subject.should_receive(:send_to_socket).with {|bin| bin.match /\.foo/ }
 
-      subject.register("FOO", 1, 'g', 1)
+      subject.register(:bin => "FOO", :value => 1, :type => :gauge, :sample_rate => 1)
     end
 
     describe "#format_bucket" do
@@ -22,7 +22,7 @@ module Fozzie::Adapter
       it "converts any values to strings for stat value, ignoring nil" do
         subject.socket.should_receive(:send).with {|bin| bin.match /\.foo.1._.bar/ }
 
-        subject.register([:foo, 1, nil, "@", "BAR"], 1, 'g', 1)
+        subject.register(:bin => [:foo, 1, nil, "@", "BAR"], :value => 1, :type => :gauge, :sample_rate => 1)
       end
 
       it "replaces invalid chracters" do
@@ -45,15 +45,33 @@ module Fozzie::Adapter
     it "ensures block is called on socket error" do
       subject.socket.stub(:send) { raise SocketError }
 
-      proc { subject.register('data.bin', 1, 'g', 1) { sleep 0.01 } }.should_not raise_error
-      proc { subject.register('data.bin', 1, 'g', 1) { sleep 0.01 } }.should_not raise_error
+      proc { subject.register(:bin => 'data.bin', :value => 1, :type => :gauge, :sample_rate => 1) { sleep 0.01 } }.should_not raise_error
+      proc { subject.register(:bin => 'data.bin', :value => 1, :type => :gauge, :sample_rate => 1) { sleep 0.01 } }.should_not raise_error
     end
 
     it "raises Timeout on slow lookup" do
       Fozzie.c.timeout = 0.01
       subject.socket.stub(:send).with(any_args) { sleep 0.4 }
 
-      subject.register('data.bin', 1, :gauge, 1).should eq false
+      subject.register(:bin => 'data.bin', :value => 1, :type => :gauge, :sample_rate => 1).should eq false
+    end
+
+    describe "multiple stats in a single call" do
+
+      it "collects stats together with delimeter" do
+        Fozzie.c.disable_prefix
+
+        stats = [
+          { :bin => 'foo', :value => 1, :type => :count, :sample_rate => 1 },
+          { :bin => 'bar', :value => 1, :type => :gauge, :sample_rate => 1 },
+          { :bin => %w{foo bar}, :value => 100, :type => :timing, :sample_rate => 1 }
+        ]
+
+        subject.should_receive(:send_to_socket).with "foo:1|c\nbar:1|g\nfoo.bar:100|ms"
+
+        subject.register(stats)
+      end
+
     end
 
   end

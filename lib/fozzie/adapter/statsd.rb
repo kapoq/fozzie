@@ -9,18 +9,26 @@ module Fozzie
       RESERVED_CHARS_REPLACEMENT = '_'
       DELIMETER                  = '.'
       TYPES                      = { :gauge => 'g', :count => 'c', :timing => 'ms' }
+      BULK_DELIMETER             = "\n"
 
       # Send the statistic to the server
       #
       # Creates the Statsd key from the given values, and sends to socket (depending on sample rate)
-      #
-      def register(stat, delta, type, sample_rate)
-        bucket = format_bucket(stat)
-        value  = format_value(delta, type, sample_rate)
+      # :bin => :foo 
+      # :value => 1
+      # :type => :gauge
+      # :sample_rate => 1
+      def register(*stats)
+        metrics = stats.flatten.collect do |stat|
+          next if sampled?(stat[:sample_rate])
 
-        packet = [bucket, value].join(':')
+          bucket = format_bucket(stat[:bin])
+          value  = format_value(stat[:value], stat[:type], stat[:sample_rate])
 
-        sampled(sample_rate) { send_to_socket(packet) }
+          [bucket, value].join(':')
+        end.compact.join(BULK_DELIMETER)
+
+        send_to_socket(metrics)
       end
 
       def format_bucket(stat)
@@ -43,7 +51,11 @@ module Fozzie
 
       # If the statistic is sampled, generate a condition to check if it's good to send
       def sampled(sample_rate)
-        yield unless sample_rate < 1 and rand > sample_rate
+        yield unless sampled?(sample_rate)
+      end
+
+      def sampled?(sample_rate)
+        sample_rate < 1 and rand > sample_rate
       end
 
       # Send data to the server via the socket

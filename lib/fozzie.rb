@@ -15,7 +15,8 @@ module Fozzie
 
   require "fozzie/exception"
   require 'fozzie/configuration'
-  require "fozzie/interface"
+  require "fozzie/dsl"
+  require "fozzie/bulk_dsl"
   require "fozzie/version"
 
   require "fozzie/rack/middleware"
@@ -61,7 +62,7 @@ module Fozzie
 
   # Loads each namespace for registering statistics
   self.c.namespaces.each do |klas|
-    Kernel.const_set(klas, Interface.instance) unless const_defined?(klas)
+    Kernel.const_set(klas, Dsl.instance) unless const_defined?(klas)
   end
 
 end

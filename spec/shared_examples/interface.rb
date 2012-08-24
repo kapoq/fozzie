@@ -1,15 +1,4 @@
-require 'spec_helper'
-require 'fozzie/interface'
-
-describe Fozzie::Interface do
-
-  subject { Fozzie::Interface.instance }
-
-  it "acts an a singleton" do
-    Fozzie.c.namespaces.each do |k|
-      Kernel.const_get(k).should eq Fozzie::Interface.instance
-    end
-  end
+shared_examples "interface" do
 
   it "#increment" do
     subject.should_receive(:send).with('wat', 1, :count, 1)
@@ -32,13 +21,13 @@ describe Fozzie::Interface do
   end
 
   it "times a given block" do
-    subject.should_receive(:timing).with do |b, val, timing| 
+    subject.should_receive(:timing).with do |b, val, timing|
       b == 'data.bin' && (1..11).include?(val)
     end.exactly(3).times
 
-    subject.time_for('data.bin')          { sleep 0.01 }
-    subject.time_to_do('data.bin')        { sleep 0.01 }
-    subject.time('data.bin')              { sleep 0.01 }
+    subject.time_for('data.bin')   { sleep 0.01 }
+    subject.time_to_do('data.bin') { sleep 0.01 }
+    subject.time('data.bin')       { sleep 0.01 }
   end
 
   describe "event" do
@@ -135,6 +124,19 @@ describe Fozzie::Interface do
         res.should == false
       end
     end
+  end
+
+  describe "#bulk" do
+
+    it "registers statistics in a single call" do
+      Fozzie.c.adapter.should_receive(:register).once
+
+      subject.bulk do
+        increment :foo
+        decrement :bar
+      end
+    end
+
   end
 
   it "registers a gauge measurement" do
