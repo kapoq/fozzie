@@ -10,9 +10,12 @@ module Fozzie
 
   class Configuration
     include Sys
+    extend Forwardable
 
+    def_delegators :adapter, :delimeter, :safe_separator
+    
     attr_accessor :env, :config_path, :host, :port, :appname, :namespaces,
-      :timeout, :monitor_classes, :sniff_envs, :ignore_prefix, :prefix, :provider
+      :timeout, :monitor_classes, :sniff_envs, :ignore_prefix, :prefix
 
     def initialize(args = {})
       merge_and_assign_config(args)
@@ -20,10 +23,14 @@ module Fozzie
       self.origin_name
     end
 
-    def adapter
-      @adapter ||= eval("Fozzie::Adapter::#{@provider}").new
+    def adapter=(adapter)
+      @adapter = eval("Fozzie::Adapter::#{adapter}").new
     rescue NoMethodError
       raise AdapterMissing, "Adapter could not be found for given provider #{@provider}"
+    end
+
+    def adapter
+      @adapter || default_configuration[:adapter]
     end
 
     def disable_prefix
@@ -35,15 +42,17 @@ module Fozzie
       return nil if @ignore_prefix
       return @data_prefix if @data_prefix
 
-      data_prefix = @prefix.collect do |me|
-        (me.kind_of?(Symbol) && self.respond_to?(me.to_sym) ? self.send(me) : me.to_s)
-      end
+      escaped_prefix_with_dynamically_resolved_parts = prefix.map do |part|
+        resolved_part = (part.kind_of?(Symbol) && self.respond_to?(part) ? self.send(part) : part.to_s)
+        escaped_resolved_part = resolved_part.gsub(delimeter, safe_separator)
+        escaped_resolved_part == "" ? nil : escaped_resolved_part
+      end.compact
 
-      data_prefix = data_prefix.collect do |s|
-        s.empty? ? nil : s.gsub(adapter.class::DELIMETER, '-')
-      end.compact.join(adapter.class::DELIMETER).strip
-
-      @data_prefix ||= (data_prefix.empty? ? nil : data_prefix)
+      @data_prefix = if escaped_prefix_with_dynamically_resolved_parts.any?
+                       escaped_prefix_with_dynamically_resolved_parts.join(delimeter).strip
+                     else
+                       nil
+                     end
     end
 
     # Returns the origin name of the current machine to register the stat against
@@ -80,7 +89,7 @@ module Fozzie
         :monitor_classes => [],
         :sniff_envs      => [:development, :staging, :production],
         :ignore_prefix   => false,
-        :provider        => :Statsd
+        :adapter         => :Statsd
       }.dup
     end
 

@@ -2,7 +2,6 @@ require 'spec_helper'
 require 'logger'
 
 describe Fozzie do
-
   it "allows dynamic assignment" do
     { :host => 'somewhere.local', :port => 99 }.each do |field, val|
       Fozzie.configure {|c| c.send("#{field}=", val) }
@@ -10,10 +9,21 @@ describe Fozzie do
     end
   end
 
-  it "allows assignment of logger" do
-    logger = Logger.new STDOUT
-    Fozzie.logger = logger
-    Fozzie.logger.should be logger
+  describe ".logger" do
+    let(:logger) { double "logger" }
+
+    before do
+      @old_logger = Fozzie.logger
+    end
+    
+    it "assigns a logger" do
+      Fozzie.logger = logger
+      Fozzie.logger.should eq logger
+    end
+
+    after do
+      Fozzie.logger = @old_logger
+    end
   end
 
   it "has configuration" do

@@ -8,6 +8,7 @@ module Fozzie
       RESERVED_CHARS_REGEX       = /[\:\|\@\s]/
       RESERVED_CHARS_REPLACEMENT = '_'
       DELIMETER                  = '.'
+      SAFE_SEPARATOR             = '-'
       TYPES                      = { :gauge => 'g', :count => 'c', :timing => 'ms' }
       BULK_DELIMETER             = "\n"
 
@@ -56,17 +57,15 @@ module Fozzie
 
       # Send data to the server via the socket
       def send_to_socket(message)
-        begin
-          Fozzie.logger.debug {"Statsd: #{message}"} if Fozzie.logger
-          Timeout.timeout(Fozzie.c.timeout) {
-            res = socket.send(message, 0, Fozzie.c.host, Fozzie.c.port)
-            Fozzie.logger.debug {"Statsd sent: #{res}"} if Fozzie.logger
-            (res.to_i == message.length)
-          }
-        rescue => exc
-          Fozzie.logger.debug {"Statsd Failure: #{exc.message}\n#{exc.backtrace}"} if Fozzie.logger
-          false
-        end
+        Fozzie.logger.debug {"Statsd: #{message}"} if Fozzie.logger
+        Timeout.timeout(Fozzie.c.timeout) {
+          res = socket.send(message, 0, Fozzie.c.host, Fozzie.c.port)
+          Fozzie.logger.debug {"Statsd sent: #{res}"} if Fozzie.logger
+          (res.to_i == message.length)
+        }
+      rescue => exc
+        Fozzie.logger.debug {"Statsd Failure: #{exc.message}\n#{exc.backtrace}"} if Fozzie.logger
+        false
       end
 
       # The Socket we want to use to send data
@@ -74,6 +73,13 @@ module Fozzie
         @socket ||= ::UDPSocket.new
       end
 
+      def delimeter
+        DELIMETER
+      end
+
+      def safe_separator
+        SAFE_SEPARATOR
+      end
     end
 
   end

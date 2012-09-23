@@ -41,24 +41,13 @@ describe Fozzie::Sniff do
     FooBar
   end
 
+  # Turn on sniffing for the duration of this spec
+  before(:all) do
+    Fozzie.c.sniff_envs << :test
+  end
 
-  context "environments" do
-    subject { klass }
-
-    it "is disabled in test" do
-      Fozzie.c.stub(:env => 'test')
-      S.should_receive(:time_for).with(['foo_bar', 'bar!']).never
-
-      subject.bar!
-    end
-
-    it "is enabled in development" do
-      Fozzie.c.stub(:env => 'development')
-      S.should_receive(:time_for).with(['foo_bar', 'bar!'])
-
-      subject.bar!
-    end
-
+  after(:all) do
+    Fozzie.c.sniff_envs.delete(:test)
   end
 
   context 'class methods' do
@@ -103,7 +92,7 @@ describe Fozzie::Sniff do
   end
 
   context 'instance methods' do
-    subject { FooBar.new }
+    subject { klass.new }
 
     it "aliases methods for monitoring" do
       subject.methods.grep(/foo/).should =~ [:foo, :foo_with_monitor, :foo_without_monitor]

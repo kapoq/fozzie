@@ -2,7 +2,6 @@ require 'spec_helper'
 require 'resolv'
 
 describe Fozzie::Configuration do
-
   it "#host" do
     subject.host.should be_kind_of(String)
   end
@@ -12,35 +11,39 @@ describe Fozzie::Configuration do
   end
 
   it "attempts to load configuration from yaml" do
-    c = Fozzie::Configuration.new({:env => 'test', :config_path => 'spec/'})
+    c = Fozzie::Configuration.new({
+                                    env:         'test',
+                                    config_path: 'spec/',
+                                    adapter:     :TestAdapter
+                                  })
     c.stub(:origin_name => "")
     c.host.should eq '1.1.1.1'
     c.port.should eq 9876
     c.appname.should eq 'fozzie'
-    c.data_prefix.should eq 'fozzie.test'
+    c.data_prefix.should eq "fozzie#{c.safe_separator}test"
   end
 
   it "defaults env" do
     subject.env.should eq 'test'
   end
 
-  describe "#provider" do
+  describe "#adapter" do
     it "throw error on incorrect assignment" do
-      -> { Fozzie::Configuration.new({:env => 'test', :provider => 'foo'}) }.should raise_error(Fozzie::AdapterMissing)
+      -> { Fozzie::Configuration.new({:env => 'test', :adapter => 'foo'}) }.should raise_error(Fozzie::AdapterMissing)
     end
 
-    it "defaults provider to Statsd" do
+    it "defaults adapter to Statsd" do
       subject.adapter.should be_kind_of(Fozzie::Adapter::Statsd)
     end
   end
 
-  describe "without prefix" do
-    it "registers stats without app, etc" do
+  describe "#disable_prefix" do
+    it "sets the data_prefix to nil" do
       subject.disable_prefix
-      subject.data_prefix.should eq nil
+      subject.data_prefix.should be_nil
     end
   end
-
+  
   describe "#prefix and #data_prefix" do
     it "creates a #data_prefix" do
       subject.stub(:origin_name => "")

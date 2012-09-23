@@ -3,6 +3,7 @@ require 'action_controller'
 
 describe Fozzie::Rails::Middleware do
   let(:routes)  { mock "routes" }
+  let(:rails)   { mock "rails" }
 
   subject do
     RailsApp = Class.new do
@@ -17,7 +18,6 @@ describe Fozzie::Rails::Middleware do
 
   describe "#rails_version" do
     let(:version) { "10.9.8" }
-    let(:rails)   { mock "rails" }
 
     before do
       ::Rails.stub(:version => version)

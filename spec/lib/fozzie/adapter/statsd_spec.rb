@@ -3,9 +3,17 @@ require 'fozzie/adapter/statsd'
 
 module Fozzie::Adapter
   describe Statsd do
-
     it_behaves_like "fozzie adapter"
 
+    # Switch to Statsd adapter for the duration of this test
+    before(:all) do
+      Fozzie.c.adapter = :Statsd
+    end
+
+    after(:all) do
+      Fozzie.c.adapter = :TestAdapter
+    end
+    
     it "downcases any stat value" do
       subject.should_receive(:send_to_socket).with {|bin| bin.match /\.foo/ }
 
@@ -20,9 +28,7 @@ module Fozzie::Adapter
       end
 
       it "converts any values to strings for stat value, ignoring nil" do
-        subject.socket.should_receive(:send).with {|bin| bin.match /\.foo.1._.bar/ }
-
-        subject.register(:bin => [:foo, 1, nil, "@", "BAR"], :value => 1, :type => :gauge, :sample_rate => 1)
+        subject.format_bucket([:foo, 1, nil, "@", "BAR"]).should =~ /foo.1._.bar/
       end
 
       it "replaces invalid chracters" do
@@ -71,8 +77,6 @@ module Fozzie::Adapter
 
         subject.register(stats)
       end
-
     end
-
   end
 end
